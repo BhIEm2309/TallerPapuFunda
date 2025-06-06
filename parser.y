@@ -95,8 +95,12 @@ expr:
 
 int main() {
     if (yyparse() == 0) {
-        printf("Árbol de sintaxis generado correctamente:\n");
-        print_ast(root, 0);
+        FILE* out = fopen("output.c", "w");
+        fprintf(out, "#include <stdio.h>\nint main() {\n");
+        generate_code(out, root);
+        fprintf(out, "return 0;\n}\n");
+        fclose(out);
+        printf("Código C generado en output.c\n");
     }
     return 0;
 }

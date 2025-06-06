@@ -61,5 +61,6 @@ ASTNode* make_decl_node(const char* id, NodeType decl_type);
 ASTNode* make_if_node(ASTNode* cond, ASTNode* then_branch, ASTNode* else_branch);
 ASTNode* make_while_node(ASTNode* cond, ASTNode* body);
 void print_ast(ASTNode* node, int indent);
+void generate_code(FILE* out, ASTNode* node);
 
 #endif
