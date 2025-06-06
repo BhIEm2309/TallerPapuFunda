@@ -12,7 +12,7 @@ ASTNode* make_int_node(int value) {
 
 ASTNode* make_id_node(const char* name) {
     ASTNode* node = malloc(sizeof(ASTNode));
-    node->type = NODE_ID;
+    node->type = NODE_ID;      // Ya está bien
     node->sval = strdup(name);
     return node;
 }
@@ -173,7 +173,7 @@ void generate_code(FILE* out, ASTNode* node) {
             fprintf(out, "%f", node->fval);
             break;
         case NODE_STRING:
-            fprintf(out, "char %s[100];\n", node->decl.id);
+            fprintf(out, "%s", node->sval);
             break;
         case NODE_ID:
             fprintf(out, "%s", node->sval);
@@ -199,14 +199,21 @@ void generate_code(FILE* out, ASTNode* node) {
             fprintf(out, ";\n");
             break;
         case NODE_PRINT:
-            fprintf(out, "printf(\"");
-            if (node->assign.value->type == NODE_INT) fprintf(out, "%%d");
-            else if (node->assign.value->type == NODE_FLOAT) fprintf(out, "%%f");
-            else fprintf(out, "%%s");
-            fprintf(out, "\\n\", ");
+            if (node->assign.value->type == NODE_INT) {
+                fprintf(out, "printf(\"%%d\\n\", ");
+            } else if (node->assign.value->type == NODE_FLOAT) {
+                fprintf(out, "printf(\"%%f\\n\", ");
+            } else if (node->assign.value->type == NODE_STRING || node->assign.value->type == NODE_ID) {
+                fprintf(out, "printf(\"%%s\\n\", ");
+            } else {
+                fprintf(out, "printf(\"<unsupported>\\n\"");
+            }
+
             generate_code(out, node->assign.value);
             fprintf(out, ");\n");
             break;
+
+
         case NODE_BINOP:
             fprintf(out, "(");
             generate_code(out, node->binop.left);
@@ -249,14 +256,14 @@ void generate_code(FILE* out, ASTNode* node) {
             break;
         case NODE_READ:
             switch (node->read.type) {
-                case 0:
+                case 0: // int
                     fprintf(out, "scanf(\"%%d\", &%s);\n", node->read.id);
                     break;
-                case 1:
+                case 1: // float
                     fprintf(out, "scanf(\"%%f\", &%s);\n", node->read.id);
                     break;
-                case 2:
-                    fprintf(out, "scanf(\"%%s\", %s);\n", node->read.id);
+                case 2: // string
+                    fprintf(out, "scanf(\"%%s\", %s);\n", node->read.id);  // sin &
                     break;
             }
             break;

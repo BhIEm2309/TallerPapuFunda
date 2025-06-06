@@ -81,7 +81,7 @@ union YYSTYPE
     int ival;
     float fval;
     char* id;
-    void* node;  // ✅ solución al error: usar puntero genérico
+    void* node;
 
 #line 87 "parser.tab.h"
 

@@ -160,7 +160,7 @@ union YYSTYPE
     int ival;
     float fval;
     char* id;
-    void* node;  // ✅ solución al error: usar puntero genérico
+    void* node;
 
 #line 166 "parser.tab.c"
 
@@ -540,9 +540,9 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int8 yyrline[] =
 {
        0,    40,    40,    44,    53,    64,    65,    66,    67,    68,
-      69,    70,    71,    73,    75,    76,    77,    81,    82,    83,
-      84,    85,    86,    87,    88,    89,    90,    91,    92,    93,
-      94
+      69,    70,    76,    78,    80,    81,    82,    86,    87,    88,
+      89,    90,    91,    92,    93,    94,    95,    96,    97,    98,
+      99
 };
 #endif
 
@@ -1450,132 +1450,137 @@ yyreduce:
 
   case 10:
 #line 69 "parser.y"
-                               { (yyval.node) = make_print_node(make_id_node((yyvsp[-1].id))); }
+                               { (yyval.node) = make_print_node(make_string_node((yyvsp[-1].id))); }
 #line 1455 "parser.tab.c"
     break;
 
   case 11:
 #line 70 "parser.y"
-                               { (yyval.node) = make_read_node((yyvsp[-1].id), 0); }
-#line 1461 "parser.tab.c"
+                   {
+    if (strcmp((yyvsp[-1].id), "nombre") == 0)
+        (yyval.node) = make_read_node((yyvsp[-1].id), 2); // cadena
+    else
+        (yyval.node) = make_read_node((yyvsp[-1].id), 0); // entero por defecto
+    }
+#line 1466 "parser.tab.c"
     break;
 
   case 12:
-#line 72 "parser.y"
+#line 77 "parser.y"
                                 { (yyval.node) = make_if_node((ASTNode*)(yyvsp[-2].node), (ASTNode*)(yyvsp[0].node), NULL); }
-#line 1467 "parser.tab.c"
+#line 1472 "parser.tab.c"
     break;
 
   case 13:
-#line 74 "parser.y"
+#line 79 "parser.y"
                                 { (yyval.node) = make_if_node((ASTNode*)(yyvsp[-4].node), (ASTNode*)(yyvsp[-2].node), (ASTNode*)(yyvsp[0].node)); }
-#line 1473 "parser.tab.c"
+#line 1478 "parser.tab.c"
     break;
 
   case 14:
-#line 75 "parser.y"
+#line 80 "parser.y"
                                { (yyval.node) = make_while_node((ASTNode*)(yyvsp[-2].node), (ASTNode*)(yyvsp[0].node)); }
-#line 1479 "parser.tab.c"
+#line 1484 "parser.tab.c"
     break;
 
   case 15:
-#line 76 "parser.y"
+#line 81 "parser.y"
                                { (yyval.node) = (yyvsp[-1].node); }
-#line 1485 "parser.tab.c"
+#line 1490 "parser.tab.c"
     break;
 
   case 16:
-#line 77 "parser.y"
+#line 82 "parser.y"
                                           {(yyval.node) = make_for_node((yyvsp[-5].node), (ASTNode*)(yyvsp[-4].node), (yyvsp[-2].node), (yyvsp[0].node));}
-#line 1491 "parser.tab.c"
+#line 1496 "parser.tab.c"
     break;
 
   case 17:
-#line 81 "parser.y"
+#line 86 "parser.y"
                          { (yyval.node) = make_binop_node("+", (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1497 "parser.tab.c"
+#line 1502 "parser.tab.c"
     break;
 
   case 18:
-#line 82 "parser.y"
+#line 87 "parser.y"
                          { (yyval.node) = make_binop_node("-", (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1503 "parser.tab.c"
+#line 1508 "parser.tab.c"
     break;
 
   case 19:
-#line 83 "parser.y"
+#line 88 "parser.y"
                          { (yyval.node) = make_binop_node("*", (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1509 "parser.tab.c"
+#line 1514 "parser.tab.c"
     break;
 
   case 20:
-#line 84 "parser.y"
+#line 89 "parser.y"
                          { (yyval.node) = make_binop_node("/", (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1515 "parser.tab.c"
+#line 1520 "parser.tab.c"
     break;
 
   case 21:
-#line 85 "parser.y"
+#line 90 "parser.y"
                          { (yyval.node) = make_binop_node("==", (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1521 "parser.tab.c"
+#line 1526 "parser.tab.c"
     break;
 
   case 22:
-#line 86 "parser.y"
+#line 91 "parser.y"
                          { (yyval.node) = make_binop_node("!=", (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1527 "parser.tab.c"
+#line 1532 "parser.tab.c"
     break;
 
   case 23:
-#line 87 "parser.y"
+#line 92 "parser.y"
                          { (yyval.node) = make_binop_node("<=", (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1533 "parser.tab.c"
+#line 1538 "parser.tab.c"
     break;
 
   case 24:
-#line 88 "parser.y"
+#line 93 "parser.y"
                          { (yyval.node) = make_binop_node(">=", (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1539 "parser.tab.c"
+#line 1544 "parser.tab.c"
     break;
 
   case 25:
-#line 89 "parser.y"
+#line 94 "parser.y"
                          { (yyval.node) = make_binop_node("<", (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1545 "parser.tab.c"
+#line 1550 "parser.tab.c"
     break;
 
   case 26:
-#line 90 "parser.y"
+#line 95 "parser.y"
                          { (yyval.node) = make_binop_node(">", (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1551 "parser.tab.c"
+#line 1556 "parser.tab.c"
     break;
 
   case 27:
-#line 91 "parser.y"
+#line 96 "parser.y"
                          { (yyval.node) = make_int_node((yyvsp[0].ival)); }
-#line 1557 "parser.tab.c"
+#line 1562 "parser.tab.c"
     break;
 
   case 28:
-#line 92 "parser.y"
+#line 97 "parser.y"
                          { (yyval.node) = make_id_node((yyvsp[0].id)); }
-#line 1563 "parser.tab.c"
+#line 1568 "parser.tab.c"
     break;
 
   case 29:
-#line 93 "parser.y"
+#line 98 "parser.y"
                          { (yyval.node) = make_float_node((yyvsp[0].fval)); }
-#line 1569 "parser.tab.c"
+#line 1574 "parser.tab.c"
     break;
 
   case 30:
-#line 94 "parser.y"
+#line 99 "parser.y"
                          { (yyval.node) = make_string_node((yyvsp[0].id)); }
-#line 1575 "parser.tab.c"
+#line 1580 "parser.tab.c"
     break;
 
 
-#line 1579 "parser.tab.c"
+#line 1584 "parser.tab.c"
 
       default: break;
     }
@@ -1807,7 +1812,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 97 "parser.y"
+#line 102 "parser.y"
 
 
 int main() {
