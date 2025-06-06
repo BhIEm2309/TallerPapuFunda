@@ -89,6 +89,13 @@ ASTNode* make_for_node(ASTNode* init, ASTNode* condition, ASTNode* increment, AS
     node->forstmt.body = body;
     return node;
 }
+ASTNode* make_read_node(const char* id, int type) {
+    ASTNode* node = malloc(sizeof(ASTNode));
+    node->type = NODE_READ;
+    node->read.id = strdup(id);
+    node->read.type = type;
+    return node;
+}
 
 void print_indent(int indent) {
     for (int i = 0; i < indent; i++) printf("  ");
@@ -166,7 +173,7 @@ void generate_code(FILE* out, ASTNode* node) {
             fprintf(out, "%f", node->fval);
             break;
         case NODE_STRING:
-            fprintf(out, "%s", node->sval);
+            fprintf(out, "char %s[100];\n", node->decl.id);
             break;
         case NODE_ID:
             fprintf(out, "%s", node->sval);
@@ -180,7 +187,7 @@ void generate_code(FILE* out, ASTNode* node) {
                     fprintf(out, "float %s;\n", node->decl.id);
                     break;
                 case NODE_STRING:
-                    fprintf(out, "char* %s;\n", node->decl.id);
+                    fprintf(out, "char %s[100];\n", node->decl.id);
                     break;
                 default:
                     break;
@@ -229,6 +236,28 @@ void generate_code(FILE* out, ASTNode* node) {
         case NODE_BLOCK:
             for (int i = 0; i < node->block.stmt_count; ++i) {
                 generate_code(out, node->block.stmts[i]);
+            }
+            break;
+        case NODE_FOR:
+            generate_code(out, node->forstmt.init);
+            fprintf(out, "while (");
+            generate_code(out, node->forstmt.cond);
+            fprintf(out, ") {\n");
+            generate_code(out, node->forstmt.body);
+            generate_code(out, node->forstmt.incr);
+            fprintf(out, "}\n");
+            break;
+        case NODE_READ:
+            switch (node->read.type) {
+                case 0:
+                    fprintf(out, "scanf(\"%%d\", &%s);\n", node->read.id);
+                    break;
+                case 1:
+                    fprintf(out, "scanf(\"%%f\", &%s);\n", node->read.id);
+                    break;
+                case 2:
+                    fprintf(out, "scanf(\"%%s\", %s);\n", node->read.id);
+                    break;
             }
             break;
         default:

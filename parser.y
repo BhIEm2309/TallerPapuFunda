@@ -67,13 +67,14 @@ stmt:
     | ID '=' expr ';'          { $$ = make_assign_node($1, (ASTNode*)$3); }
     | PRINT ID ';'             { $$ = make_print_node(make_id_node($2)); }
     | PRINT STRING_LITERAL ';' { $$ = make_print_node(make_id_node($2)); }
-    | WRITE ID ';'             { $$ = NULL; } /* aún no implementado */
+    | WRITE ID ';'             { $$ = make_read_node($2, 0); }
     | IF '(' expr ')' stmt %prec LOWER_THAN_ELSE
                                 { $$ = make_if_node((ASTNode*)$3, (ASTNode*)$5, NULL); }
     | IF '(' expr ')' stmt ELSE stmt
                                 { $$ = make_if_node((ASTNode*)$3, (ASTNode*)$5, (ASTNode*)$7); }
     | WHILE '(' expr ')' stmt  { $$ = make_while_node((ASTNode*)$3, (ASTNode*)$5); }
     | '{' stmt_list '}'        { $$ = $2; }
+    | FOR '(' stmt expr ';' stmt ')' stmt {$$ = make_for_node($3, (ASTNode*)$4, $6, $8);}
     ;
 
 expr:

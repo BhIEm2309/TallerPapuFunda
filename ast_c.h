@@ -55,6 +55,11 @@ typedef struct ASTNode {
             struct ASTNode* incr;
             struct ASTNode* body;
         } forstmt;
+        struct {
+            char* id;
+            int type;
+        } read;
+
     };
 } ASTNode;
 
@@ -70,6 +75,7 @@ ASTNode* make_while_node(ASTNode* cond, ASTNode* body);
 ASTNode* make_float_node(float value);
 ASTNode* make_string_node(const char* value);
 ASTNode* make_for_node(ASTNode* init, ASTNode* condition, ASTNode* increment, ASTNode* body);
+ASTNode* make_read_node(const char* id, int type);
 void print_ast(ASTNode* node, int indent);
 void generate_code(FILE* out, ASTNode* node);
 
