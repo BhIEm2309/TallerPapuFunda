@@ -3,6 +3,24 @@
 #include <string.h>
 #include "ast_c.h"
 
+Symbol symbol_table[100];
+int symbol_count = 0;
+
+void add_symbol(const char* name, int type) {
+    symbol_table[symbol_count].name = strdup(name);
+    symbol_table[symbol_count].type = type;
+    symbol_count++;
+}
+
+int get_symbol_type(const char* name) {
+    for (int i = 0; i < symbol_count; ++i) {
+        if (strcmp(symbol_table[i].name, name) == 0)
+            return symbol_table[i].type;
+    }
+    return NODE_UNKNOWN;
+}
+
+/* AST Node Creation */
 ASTNode* make_int_node(int value) {
     ASTNode* node = malloc(sizeof(ASTNode));
     node->type = NODE_INT;
@@ -12,8 +30,22 @@ ASTNode* make_int_node(int value) {
 
 ASTNode* make_id_node(const char* name) {
     ASTNode* node = malloc(sizeof(ASTNode));
-    node->type = NODE_ID;      // Ya está bien
+    node->type = NODE_ID;
     node->sval = strdup(name);
+    return node;
+}
+
+ASTNode* make_float_node(float value) {
+    ASTNode* node = malloc(sizeof(ASTNode));
+    node->type = NODE_FLOAT;
+    node->fval = value;
+    return node;
+}
+
+ASTNode* make_string_node(const char* value) {
+    ASTNode* node = malloc(sizeof(ASTNode));
+    node->type = NODE_STRING;
+    node->sval = strdup(value);
     return node;
 }
 
@@ -66,29 +98,16 @@ ASTNode* make_while_node(ASTNode* cond, ASTNode* body) {
     return node;
 }
 
-ASTNode* make_float_node(float value) {
-    ASTNode* node = malloc(sizeof(ASTNode));
-    node->type = NODE_FLOAT;
-    node->fval = value;
-    return node;
-}
-
-ASTNode* make_string_node(const char* value) {
-    ASTNode* node = malloc(sizeof(ASTNode));
-    node->type = NODE_STRING;
-    node->sval = strdup(value);
-    return node;
-}
-
-ASTNode* make_for_node(ASTNode* init, ASTNode* condition, ASTNode* increment, ASTNode* body) {
+ASTNode* make_for_node(ASTNode* init, ASTNode* cond, ASTNode* incr, ASTNode* body) {
     ASTNode* node = malloc(sizeof(ASTNode));
     node->type = NODE_FOR;
     node->forstmt.init = init;
-    node->forstmt.cond = condition;
-    node->forstmt.incr = increment;
+    node->forstmt.cond = cond;
+    node->forstmt.incr = incr;
     node->forstmt.body = body;
     return node;
 }
+
 ASTNode* make_read_node(const char* id, int type) {
     ASTNode* node = malloc(sizeof(ASTNode));
     node->type = NODE_READ;
@@ -97,118 +116,49 @@ ASTNode* make_read_node(const char* id, int type) {
     return node;
 }
 
-void print_indent(int indent) {
-    for (int i = 0; i < indent; i++) printf("  ");
-}
-
-void print_ast(ASTNode* node, int indent) 
-{
-    if (!node) return;
-
-    print_indent(indent);
-    switch (node->type) {
-        case NODE_INT:
-            printf("Int: %d\n", node->ival);
-            break;
-        case NODE_ID:
-            printf("Id: %s\n", node->sval);
-            break;
-        case NODE_BINOP:
-            printf("Op: %s\n", node->binop.op);
-            print_ast(node->binop.left, indent + 1);
-            print_ast(node->binop.right, indent + 1);
-            break;
-        case NODE_ASSIGN:
-            printf("Asignación: %s =\n", node->assign.id);
-            print_ast(node->assign.value, indent + 1);
-            break;
-        case NODE_PRINT:
-            printf("Print:\n");
-            print_ast(node->assign.value, indent + 1);
-            break;
-        case NODE_DECL:
-            printf("Declaración (%s): %s\n",
-                   node->decl.decl_type == NODE_INT ? "int" :
-                   node->decl.decl_type == NODE_FLOAT ? "float" : "string",
-                   node->decl.id);
-            break;
-        case NODE_IF:
-            printf("If:\n");
-            print_indent(indent + 1); printf("Condición:\n");
-            print_ast(node->ifstmt.cond, indent + 2);
-            print_indent(indent + 1); printf("Then:\n");
-            print_ast(node->ifstmt.then_branch, indent + 2);
-            if (node->ifstmt.else_branch) {
-                print_indent(indent + 1); printf("Else:\n");
-                print_ast(node->ifstmt.else_branch, indent + 2);
-            }
-            break;
-        case NODE_WHILE:
-            printf("While:\n");
-            print_indent(indent + 1); printf("Condición:\n");
-            print_ast(node->whilestmt.cond, indent + 2);
-            print_indent(indent + 1); printf("Cuerpo:\n");
-            print_ast(node->whilestmt.body, indent + 2);
-            break;
-        case NODE_BLOCK:
-            printf("Bloque:\n");
-            for (int i = 0; i < node->block.stmt_count; i++) {
-                print_ast(node->block.stmts[i], indent + 1);
-            }
-            break;
-        default:
-            printf("Nodo desconocido\n");
-            break;
-    }
-}
-
+/* Code generation */
 void generate_code(FILE* out, ASTNode* node) {
     if (!node) return;
 
     switch (node->type) {
-        case NODE_INT:
-            fprintf(out, "%d", node->ival);
-            break;
-        case NODE_FLOAT:
-            fprintf(out, "%f", node->fval);
-            break;
-        case NODE_STRING:
-            fprintf(out, "%s", node->sval);
-            break;
-        case NODE_ID:
-            fprintf(out, "%s", node->sval);
-            break;
+        case NODE_INT: fprintf(out, "%d", node->ival); break;
+        case NODE_FLOAT: fprintf(out, "%f", node->fval); break;
+        case NODE_STRING: fprintf(out, "%s", node->sval); break;
+        case NODE_ID: fprintf(out, "%s", node->sval); break;
+
         case NODE_DECL:
             switch (node->decl.decl_type) {
-                case NODE_INT:
-                    fprintf(out, "int %s;\n", node->decl.id);
-                    break;
-                case NODE_FLOAT:
-                    fprintf(out, "float %s;\n", node->decl.id);
-                    break;
-                case NODE_STRING:
-                    fprintf(out, "char %s[100];\n", node->decl.id);
-                    break;
-                default:
-                    break;
+                case NODE_INT: fprintf(out, "int %s;\n", node->decl.id); break;
+                case NODE_FLOAT: fprintf(out, "float %s;\n", node->decl.id); break;
+                case NODE_STRING: fprintf(out, "char %s[100];\n", node->decl.id); break;
+                default: break;
             }
             break;
+
         case NODE_ASSIGN:
             fprintf(out, "%s = ", node->assign.id);
             generate_code(out, node->assign.value);
             fprintf(out, ";\n");
             break;
-        case NODE_PRINT:
-            if (node->assign.value->type == NODE_INT) {
-                fprintf(out, "printf(\"%%d\\n\", ");
-            } else if (node->assign.value->type == NODE_FLOAT) {
-                fprintf(out, "printf(\"%%f\\n\", ");
-            } else if (node->assign.value->type == NODE_STRING || node->assign.value->type == NODE_ID) {
-                fprintf(out, "printf(\"%%s\\n\", ");
-            } else {
-                fprintf(out, "printf(\"<unsupported>\\n\"");
-            }
 
+        case NODE_PRINT:
+            if (node->assign.value->type == NODE_INT)
+                fprintf(out, "printf(\"%%d\\n\", ");
+            else if (node->assign.value->type == NODE_FLOAT)
+                fprintf(out, "printf(\"%%f\\n\", ");
+            else if (node->assign.value->type == NODE_STRING)
+                fprintf(out, "printf(\"%%s\\n\", ");
+            else if (node->assign.value->type == NODE_ID) {
+                int tipo = get_symbol_type(node->assign.value->sval);
+                if (tipo == NODE_INT)
+                    fprintf(out, "printf(\"%%d\\n\", ");
+                else if (tipo == NODE_FLOAT)
+                    fprintf(out, "printf(\"%%f\\n\", ");
+                else
+                    fprintf(out, "printf(\"%%s\\n\", ");
+            } else {
+                fprintf(out, "printf(\"<?>\\n\"");
+            }
             generate_code(out, node->assign.value);
             fprintf(out, ");\n");
             break;
@@ -221,6 +171,7 @@ void generate_code(FILE* out, ASTNode* node) {
             generate_code(out, node->binop.right);
             fprintf(out, ")");
             break;
+
         case NODE_IF:
             fprintf(out, "if (");
             generate_code(out, node->ifstmt.cond);
@@ -233,6 +184,7 @@ void generate_code(FILE* out, ASTNode* node) {
                 fprintf(out, "}\n");
             }
             break;
+
         case NODE_WHILE:
             fprintf(out, "while (");
             generate_code(out, node->whilestmt.cond);
@@ -240,11 +192,7 @@ void generate_code(FILE* out, ASTNode* node) {
             generate_code(out, node->whilestmt.body);
             fprintf(out, "}\n");
             break;
-        case NODE_BLOCK:
-            for (int i = 0; i < node->block.stmt_count; ++i) {
-                generate_code(out, node->block.stmts[i]);
-            }
-            break;
+
         case NODE_FOR:
             generate_code(out, node->forstmt.init);
             fprintf(out, "while (");
@@ -254,20 +202,30 @@ void generate_code(FILE* out, ASTNode* node) {
             generate_code(out, node->forstmt.incr);
             fprintf(out, "}\n");
             break;
+
+        case NODE_BLOCK:
+            for (int i = 0; i < node->block.stmt_count; ++i) {
+                generate_code(out, node->block.stmts[i]);
+            }
+            break;
+
         case NODE_READ:
-            switch (node->read.type) {
-                case 0: // int
+            switch (get_symbol_type(node->read.id)) {
+                case NODE_INT:
                     fprintf(out, "scanf(\"%%d\", &%s);\n", node->read.id);
                     break;
-                case 1: // float
+                case NODE_FLOAT:
                     fprintf(out, "scanf(\"%%f\", &%s);\n", node->read.id);
                     break;
-                case 2: // string
-                    fprintf(out, "scanf(\"%%s\", %s);\n", node->read.id);  // sin &
+                case NODE_STRING:
+                    fprintf(out, "scanf(\"%%s\", %s);\n", node->read.id);
+                    break;
+                default:
+                    fprintf(out, "/* Error: tipo no reconocido para scanf */\n");
                     break;
             }
             break;
-        default:
-            break;
+
+        default: break;
     }
 }

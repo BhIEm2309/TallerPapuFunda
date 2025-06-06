@@ -61,25 +61,20 @@ stmt_list:
     ;
 
 stmt:
-      INT ID ';'               { $$ = make_decl_node($2, NODE_INT); }
-    | FLOAT ID ';'             { $$ = make_decl_node($2, NODE_FLOAT); }
-    | STRING ID ';'            { $$ = make_decl_node($2, NODE_STRING); }
+      INT ID ';'               { add_symbol($2, NODE_INT); $$ = make_decl_node($2, NODE_INT); }
+    | FLOAT ID ';'             { add_symbol($2, NODE_FLOAT); $$ = make_decl_node($2, NODE_FLOAT); }
+    | STRING ID ';'            { add_symbol($2, NODE_STRING); $$ = make_decl_node($2, NODE_STRING); }
     | ID '=' expr ';'          { $$ = make_assign_node($1, (ASTNode*)$3); }
     | PRINT ID ';'             { $$ = make_print_node(make_id_node($2)); }
     | PRINT STRING_LITERAL ';' { $$ = make_print_node(make_string_node($2)); }
-    | WRITE ID ';' {
-    if (strcmp($2, "nombre") == 0)
-        $$ = make_read_node($2, 2); // cadena
-    else
-        $$ = make_read_node($2, 0); // entero por defecto
-    }
+    | WRITE ID ';'             { $$ = make_read_node($2, -1); }
     | IF '(' expr ')' stmt %prec LOWER_THAN_ELSE
                                 { $$ = make_if_node((ASTNode*)$3, (ASTNode*)$5, NULL); }
     | IF '(' expr ')' stmt ELSE stmt
                                 { $$ = make_if_node((ASTNode*)$3, (ASTNode*)$5, (ASTNode*)$7); }
     | WHILE '(' expr ')' stmt  { $$ = make_while_node((ASTNode*)$3, (ASTNode*)$5); }
     | '{' stmt_list '}'        { $$ = $2; }
-    | FOR '(' stmt expr ';' stmt ')' stmt {$$ = make_for_node($3, (ASTNode*)$4, $6, $8);}
+    | FOR '(' stmt expr ';' stmt ')' stmt { $$ = make_for_node($3, (ASTNode*)$4, $6, $8); }
     ;
 
 expr:

@@ -1,7 +1,10 @@
 #ifndef AST_C_H
 #define AST_C_H
 
+#include <stdio.h>
+
 typedef enum {
+    NODE_UNKNOWN = -1,
     NODE_INT,
     NODE_FLOAT,
     NODE_STRING,
@@ -59,11 +62,19 @@ typedef struct ASTNode {
             char* id;
             int type;
         } read;
-
     };
 } ASTNode;
 
-/* Funciones */
+/* Tabla de símbolos */
+typedef struct {
+    char* name;
+    int type;  // NODE_INT, NODE_FLOAT, NODE_STRING
+} Symbol;
+
+extern Symbol symbol_table[100];
+extern int symbol_count;
+
+/* Funciones AST */
 ASTNode* make_int_node(int value);
 ASTNode* make_id_node(const char* name);
 ASTNode* make_binop_node(const char* op, ASTNode* left, ASTNode* right);
@@ -76,7 +87,12 @@ ASTNode* make_float_node(float value);
 ASTNode* make_string_node(const char* value);
 ASTNode* make_for_node(ASTNode* init, ASTNode* condition, ASTNode* increment, ASTNode* body);
 ASTNode* make_read_node(const char* id, int type);
+
+
 void print_ast(ASTNode* node, int indent);
 void generate_code(FILE* out, ASTNode* node);
+
+void add_symbol(const char* name, int type);
+int get_symbol_type(const char* name);
 
 #endif

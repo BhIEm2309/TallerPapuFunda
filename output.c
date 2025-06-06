@@ -5,6 +5,6 @@ int edad;
 scanf("%s", nombre);
 scanf("%d", &edad);
 printf("%s\n", nombre);
-printf("%s\n", edad);
+printf("%d\n", edad);
 return 0;
 }
