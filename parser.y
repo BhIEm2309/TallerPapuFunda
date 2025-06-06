@@ -74,7 +74,9 @@ stmt:
                                 { $$ = make_if_node((ASTNode*)$3, (ASTNode*)$5, (ASTNode*)$7); }
     | WHILE '(' expr ')' stmt  { $$ = make_while_node((ASTNode*)$3, (ASTNode*)$5); }
     | '{' stmt_list '}'        { $$ = $2; }
-    | FOR '(' expr ';' expr ';' expr ')' stmt { $$ = make_for_node((ASTNode*)$3, (ASTNode*)$5, (ASTNode*)$7, $9); }
+
+    | FOR '(' stmt expr ';' stmt ')' stmt { $$ = make_for_node($3, (ASTNode*)$4, $6, $8); }
+
     ;
 
 expr:

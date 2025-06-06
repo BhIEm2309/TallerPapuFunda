@@ -18,12 +18,10 @@ FLOAT   {DIGIT}"."{DIGIT}
 "integer"       { return INT; }
 "floating"      { return FLOAT; }
 
-"if"            { return IF; }
-"else"          { return ELSE; }
-"while"         { return WHILE; }
-"for"           { return FOR; }
-"for"     { return FOR; }
-
+"if"        { return IF; }
+"else"      { return ELSE; }
+"while"     { return WHILE; }
+"for"       { return FOR; }
 
 "print"         { return PRINT; }
 "write"         { return WRITE; }

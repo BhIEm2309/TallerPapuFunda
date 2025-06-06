@@ -1,18 +1,9 @@
 integer i;
-integer contador;
 
 i = 0;
-contador = 5;
-
-print "Inicio del ciclo while";
-
-while (i < contador) {
-  print i;
-  i = i + 1;
-}
 
 print "Inicio del ciclo for";
 
-for (i = 0; i < 3; i = i + 1) {
+for (i = 0; i < 5; i = i + 1;) {
   print i;
 }
