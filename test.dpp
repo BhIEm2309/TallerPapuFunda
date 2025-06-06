@@ -1,8 +1,18 @@
-chain nombre;
-integer edad;
+integer i;
+integer contador;
 
-write nombre;
-write edad;
+i = 0;
+contador = 5;
 
-print nombre;
-print edad;
+print "Inicio del ciclo while";
+
+while (i < contador) {
+  print i;
+  i = i + 1;
+}
+
+print "Inicio del ciclo for";
+
+for (i = 0; i < 3; i = i + 1) {
+  print i;
+}

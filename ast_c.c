@@ -200,9 +200,9 @@ void generate_code(FILE* out, ASTNode* node) {
             fprintf(out, ") {\n");
             generate_code(out, node->forstmt.body);
             generate_code(out, node->forstmt.incr);
+            fprintf(out, ";\n");
             fprintf(out, "}\n");
             break;
-
         case NODE_BLOCK:
             for (int i = 0; i < node->block.stmt_count; ++i) {
                 generate_code(out, node->block.stmts[i]);
