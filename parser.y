@@ -77,19 +77,21 @@ stmt:
     ;
 
 expr:
-      expr '+' expr            { $$ = make_binop_node("+", (ASTNode*)$1, (ASTNode*)$3); }
-    | expr '-' expr            { $$ = make_binop_node("-", (ASTNode*)$1, (ASTNode*)$3); }
-    | expr '*' expr            { $$ = make_binop_node("*", (ASTNode*)$1, (ASTNode*)$3); }
-    | expr '/' expr            { $$ = make_binop_node("/", (ASTNode*)$1, (ASTNode*)$3); }
-    | expr EQ expr             { $$ = make_binop_node("==", (ASTNode*)$1, (ASTNode*)$3); }
-    | expr NEQ expr            { $$ = make_binop_node("!=", (ASTNode*)$1, (ASTNode*)$3); }
-    | expr LEQ expr            { $$ = make_binop_node("<=", (ASTNode*)$1, (ASTNode*)$3); }
-    | expr GEQ expr            { $$ = make_binop_node(">=", (ASTNode*)$1, (ASTNode*)$3); }
-    | expr LT expr             { $$ = make_binop_node("<", (ASTNode*)$1, (ASTNode*)$3); }
-    | expr GT expr             { $$ = make_binop_node(">", (ASTNode*)$1, (ASTNode*)$3); }
-    | NUMBER                   { $$ = make_int_node($1); }
-    | ID                       { $$ = make_id_node($1); }
-    ;
+      expr '+' expr      { $$ = make_binop_node("+", $1, $3); }
+    | expr '-' expr      { $$ = make_binop_node("-", $1, $3); }
+    | expr '*' expr      { $$ = make_binop_node("*", $1, $3); }
+    | expr '/' expr      { $$ = make_binop_node("/", $1, $3); }
+    | expr EQ expr       { $$ = make_binop_node("==", $1, $3); }
+    | expr NEQ expr      { $$ = make_binop_node("!=", $1, $3); }
+    | expr LEQ expr      { $$ = make_binop_node("<=", $1, $3); }
+    | expr GEQ expr      { $$ = make_binop_node(">=", $1, $3); }
+    | expr LT expr       { $$ = make_binop_node("<", $1, $3); }
+    | expr GT expr       { $$ = make_binop_node(">", $1, $3); }
+    | NUMBER             { $$ = make_int_node($1); }
+    | ID                 { $$ = make_id_node($1); }
+    | FLOATNUM           { $$ = make_float_node($1); }
+    | STRING_LITERAL     { $$ = make_string_node($1); }
+;
 
 %%
 

@@ -66,6 +66,30 @@ ASTNode* make_while_node(ASTNode* cond, ASTNode* body) {
     return node;
 }
 
+ASTNode* make_float_node(float value) {
+    ASTNode* node = malloc(sizeof(ASTNode));
+    node->type = NODE_FLOAT;
+    node->fval = value;
+    return node;
+}
+
+ASTNode* make_string_node(const char* value) {
+    ASTNode* node = malloc(sizeof(ASTNode));
+    node->type = NODE_STRING;
+    node->sval = strdup(value);
+    return node;
+}
+
+ASTNode* make_for_node(ASTNode* init, ASTNode* condition, ASTNode* increment, ASTNode* body) {
+    ASTNode* node = malloc(sizeof(ASTNode));
+    node->type = NODE_FOR;
+    node->forstmt.init = init;
+    node->forstmt.cond = condition;
+    node->forstmt.incr = increment;
+    node->forstmt.body = body;
+    return node;
+}
+
 void print_indent(int indent) {
     for (int i = 0; i < indent; i++) printf("  ");
 }

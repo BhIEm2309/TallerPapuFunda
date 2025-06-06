@@ -13,7 +13,8 @@ typedef enum {
     NODE_IF,
     NODE_WHILE,
     NODE_BLOCK,
-    NODE_DECL
+    NODE_DECL,
+    NODE_FOR
 } NodeType;
 
 typedef struct ASTNode {
@@ -48,6 +49,12 @@ typedef struct ASTNode {
             char* id;
             NodeType decl_type;
         } decl;
+        struct {
+            struct ASTNode* init;
+            struct ASTNode* cond;
+            struct ASTNode* incr;
+            struct ASTNode* body;
+        } forstmt;
     };
 } ASTNode;
 
@@ -60,6 +67,9 @@ ASTNode* make_print_node(ASTNode* expr);
 ASTNode* make_decl_node(const char* id, NodeType decl_type);
 ASTNode* make_if_node(ASTNode* cond, ASTNode* then_branch, ASTNode* else_branch);
 ASTNode* make_while_node(ASTNode* cond, ASTNode* body);
+ASTNode* make_float_node(float value);
+ASTNode* make_string_node(const char* value);
+ASTNode* make_for_node(ASTNode* init, ASTNode* condition, ASTNode* increment, ASTNode* body);
 void print_ast(ASTNode* node, int indent);
 void generate_code(FILE* out, ASTNode* node);
 

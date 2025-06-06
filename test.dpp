@@ -1,13 +1,22 @@
-integer x;
-x = 5;
+chain nombre;
+integer edad;
+floating altura;
 
-if (x > 3) {
-  print x;
+nombre = "Lucas";
+edad = 20;
+altura = 1.75;
+
+print nombre;
+print edad;
+print altura;
+
+if (edad >= 18) {
+  print "Mayor de edad";
 } else {
-  print "menor";
+  print "Menor de edad";
 }
 
-while (x > 0) {
-  print x;
-  x = x - 1;
+while (edad > 0) {
+  print edad;
+  edad = edad - 1;
 }
