@@ -1,13 +1,12 @@
 #include <stdio.h>
+#include <string.h>
 int main() {
-int i;
-i = 0;
-printf("%s\n", "Inicio del ciclo for");
-i = 0;
-while ((i < 5)) {
-printf("%d\n", i);
-i = (i + 1);
-;
-}
+int a;
+int b;
+int c;
+a = 10;
+b = 3;
+c = (a % b);
+printf("%d\n", c);
 return 0;
 }

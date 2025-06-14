@@ -32,7 +32,7 @@ FLOAT   {DIGIT}"."{DIGIT}
 ">="            { return GEQ; }
 "<"             { return LT; }
 ">"             { return GT; }
-
+"%"             { return '%'; }
 "+"             { return '+'; }
 "-"             { return '-'; }
 "*"             { return '*'; }
@@ -48,7 +48,12 @@ FLOAT   {DIGIT}"."{DIGIT}
 {DIGIT}         { yylval.ival = atoi(yytext); return NUMBER; }
 {ID}            { yylval.id = strdup(yytext); return ID; }
 
-\"[^\"]*\"      { yylval.id = strdup(yytext); return STRING_LITERAL; }
+\"([^\"]*)\"    {
+    yylval.id = (char*)malloc(yyleng - 1);
+    strncpy(yylval.id, yytext + 1, yyleng - 2);
+    yylval.id[yyleng - 2] = '\0';
+    return STRING_LITERAL;
+}
 
 [ \t\r\n]+      { /* Ignorar espacios */ }
 

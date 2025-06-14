@@ -1,9 +1,7 @@
-integer i;
-
-i = 0;
-
-print "Inicio del ciclo for";
-
-for (i = 0; i < 5; i = i + 1;) {
-  print i;
-}
+integer a;
+integer b;
+integer c;
+a = 10;
+b = 3;
+c = a % b;
+print c;

@@ -27,7 +27,7 @@ void yyerror(const char *s) {
 %token EQ NEQ LEQ GEQ LT GT
 
 %left '+' '-'
-%left '*' '/'
+%left '*' '/' '%'
 %left EQ NEQ LT GT LEQ GEQ
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
@@ -65,8 +65,7 @@ stmt:
     | FLOAT ID ';'             { add_symbol($2, NODE_FLOAT); $$ = make_decl_node($2, NODE_FLOAT); }
     | STRING ID ';'            { add_symbol($2, NODE_STRING); $$ = make_decl_node($2, NODE_STRING); }
     | ID '=' expr ';'          { $$ = make_assign_node($1, (ASTNode*)$3); }
-    | PRINT ID ';'             { $$ = make_print_node(make_id_node($2)); }
-    | PRINT STRING_LITERAL ';' { $$ = make_print_node(make_string_node($2)); }
+    | PRINT expr ';'           { $$ = make_print_node((ASTNode*)$2); }
     | WRITE ID ';'             { $$ = make_read_node($2, -1); }
     | IF '(' expr ')' stmt %prec LOWER_THAN_ELSE
                                 { $$ = make_if_node((ASTNode*)$3, (ASTNode*)$5, NULL); }
@@ -74,9 +73,8 @@ stmt:
                                 { $$ = make_if_node((ASTNode*)$3, (ASTNode*)$5, (ASTNode*)$7); }
     | WHILE '(' expr ')' stmt  { $$ = make_while_node((ASTNode*)$3, (ASTNode*)$5); }
     | '{' stmt_list '}'        { $$ = $2; }
-
-    | FOR '(' stmt expr ';' stmt ')' stmt { $$ = make_for_node($3, (ASTNode*)$4, $6, $8); }
-
+    | FOR '(' expr ';' expr ';' expr ')' stmt
+                                { $$ = make_for_node((ASTNode*)$3, (ASTNode*)$5, (ASTNode*)$7, (ASTNode*)$9); }
     ;
 
 expr:
@@ -84,12 +82,14 @@ expr:
     | expr '-' expr      { $$ = make_binop_node("-", $1, $3); }
     | expr '*' expr      { $$ = make_binop_node("*", $1, $3); }
     | expr '/' expr      { $$ = make_binop_node("/", $1, $3); }
+    | expr '%' expr      { $$ = make_binop_node("%", $1, $3); }
     | expr EQ expr       { $$ = make_binop_node("==", $1, $3); }
     | expr NEQ expr      { $$ = make_binop_node("!=", $1, $3); }
     | expr LEQ expr      { $$ = make_binop_node("<=", $1, $3); }
     | expr GEQ expr      { $$ = make_binop_node(">=", $1, $3); }
     | expr LT expr       { $$ = make_binop_node("<", $1, $3); }
     | expr GT expr       { $$ = make_binop_node(">", $1, $3); }
+    | ID '=' expr        { $$ = make_assign_node($1, (ASTNode*)$3); }
     | NUMBER             { $$ = make_int_node($1); }
     | ID                 { $$ = make_id_node($1); }
     | FLOATNUM           { $$ = make_float_node($1); }
@@ -101,7 +101,7 @@ expr:
 int main() {
     if (yyparse() == 0) {
         FILE* out = fopen("output.c", "w");
-        fprintf(out, "#include <stdio.h>\nint main() {\n");
+        fprintf(out, "#include <stdio.h>\n#include <string.h>\nint main() {\n");
         generate_code(out, root);
         fprintf(out, "return 0;\n}\n");
         fclose(out);
