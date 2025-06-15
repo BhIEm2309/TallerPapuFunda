@@ -22,6 +22,7 @@ FLOAT   {DIGIT}"."{DIGIT}
 "else"      { return ELSE; }
 "while"     { return WHILE; }
 "for"       { return FOR; }
+"function"      { return FUNCTION; }
 
 "print"         { return PRINT; }
 "write"         { return WRITE; }

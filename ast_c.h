@@ -18,12 +18,15 @@ typedef enum {
     NODE_WHILE,
     NODE_FOR,
     NODE_BLOCK,
-    NODE_DECL
+    NODE_DECL,
+    NODE_FUNCDEF,
+    NODE_FUNCCALL
 } NodeType;
 
 typedef struct ASTNode {
     NodeType type;
-    NodeType data_type;
+    NodeType data_type; // Solo útil para expresiones
+
     union {
         int ival;
         float fval;
@@ -71,9 +74,19 @@ typedef struct ASTNode {
             char* id;
             NodeType decl_type;
         } decl;
+
+        struct {
+            char* id;
+            struct ASTNode* body;
+        } funcdef;
+
+        struct {
+            char* id;
+        } funccall;
     };
 } ASTNode;
 
+// AST
 ASTNode* make_int_node(int value);
 ASTNode* make_float_node(float value);
 ASTNode* make_string_node(const char* value);
@@ -86,9 +99,11 @@ ASTNode* make_decl_node(const char* id, NodeType decl_type);
 ASTNode* make_if_node(ASTNode* cond, ASTNode* then_branch, ASTNode* else_branch);
 ASTNode* make_while_node(ASTNode* cond, ASTNode* body);
 ASTNode* make_for_node(ASTNode* init, ASTNode* cond, ASTNode* update, ASTNode* body);
+ASTNode* make_funccall_node(const char* id);
 void print_ast(ASTNode* node, int indent);
 void generate_code(FILE* out, ASTNode* node);
 
+// Tabla de símbolos
 typedef struct Symbol {
     char* id;
     NodeType type;
@@ -99,5 +114,16 @@ extern Symbol* symbol_table;
 void add_symbol(const char* id, NodeType type);
 Symbol* get_symbol(const char* id);
 NodeType get_symbol_type(const char* id);
+
+// Tabla de funciones
+typedef struct FunctionEntry {
+    char* id;
+    ASTNode* body;
+    struct FunctionEntry* next;
+} FunctionEntry;
+
+void add_function(const char* id, ASTNode* body);
+ASTNode* get_function(const char* id);
+void generate_all_functions(FILE* out);
 
 #endif

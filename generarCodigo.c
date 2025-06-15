@@ -2,6 +2,16 @@
 #include <string.h>
 #include "ast_c.h"
 
+extern FunctionEntry* function_table;
+
+void generate_all_functions(FILE* out) {
+    for (FunctionEntry* f = function_table; f; f = f->next) {
+        fprintf(out, "void %s() {\n", f->id);
+        generate_code(out, f->body);
+        fprintf(out, "}\n\n");
+    }
+}
+
 void generate_code(FILE* out, ASTNode* node) {
     if (!node) return;
 
@@ -41,9 +51,26 @@ void generate_code(FILE* out, ASTNode* node) {
         case NODE_ASSIGN: {
             Symbol* symbol = get_symbol(node->assign.id);
             if (symbol && symbol->type == NODE_STRING) {
-                fprintf(out, "strcpy(%s, ", node->assign.id);
-                generate_code(out, node->assign.value);
-                fprintf(out, ");\n");
+                if (node->assign.value->type == NODE_BINOP &&
+                    strcmp(node->assign.value->binop.op, "+") == 0 &&
+                    node->assign.value->binop.left->data_type == NODE_STRING &&
+                    node->assign.value->binop.right->data_type == NODE_STRING) {
+
+                    fprintf(out, "char __temp_concat[200];\n");
+                    fprintf(out, "strcpy(__temp_concat, ");
+                    generate_code(out, node->assign.value->binop.left);
+                    fprintf(out, ");\n");
+
+                    fprintf(out, "strcat(__temp_concat, ");
+                    generate_code(out, node->assign.value->binop.right);
+                    fprintf(out, ");\n");
+
+                    fprintf(out, "strcpy(%s, __temp_concat);\n", node->assign.id);
+                } else {
+                    fprintf(out, "strcpy(%s, ", node->assign.id);
+                    generate_code(out, node->assign.value);
+                    fprintf(out, ");\n");
+                }
             } else {
                 fprintf(out, "%s = ", node->assign.id);
                 generate_code(out, node->assign.value);
@@ -113,6 +140,10 @@ void generate_code(FILE* out, ASTNode* node) {
             for (int i = 0; i < node->block.stmt_count; ++i) {
                 generate_code(out, node->block.stmts[i]);
             }
+            break;
+
+        case NODE_FUNCCALL:
+            fprintf(out, "%s();\n", node->funccall.id);
             break;
 
         default:

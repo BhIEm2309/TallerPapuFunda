@@ -52,13 +52,14 @@
      FOR = 268,
      PRINT = 269,
      WRITE = 270,
-     EQ = 271,
-     NEQ = 272,
-     LEQ = 273,
-     GEQ = 274,
-     LT = 275,
-     GT = 276,
-     LOWER_THAN_ELSE = 277
+     FUNCTION = 271,
+     EQ = 272,
+     NEQ = 273,
+     LEQ = 274,
+     GEQ = 275,
+     LT = 276,
+     GT = 277,
+     LOWER_THAN_ELSE = 278
    };
 #endif
 
@@ -79,7 +80,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 83 "parser.tab.h"
+#line 84 "parser.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

@@ -27,6 +27,33 @@ NodeType get_symbol_type(const char* id) {
     return s->type;
 }
 
+// Función auxiliar de chequeo de tipos
+void check_binop_types(const char* op, NodeType left, NodeType right) {
+    if (strcmp(op, "==") == 0 || strcmp(op, "!=") == 0 ||
+        strcmp(op, "<") == 0 || strcmp(op, "<=") == 0 ||
+        strcmp(op, ">") == 0 || strcmp(op, ">=") == 0) {
+
+        if (left != right) {
+            fprintf(stderr, "Error: comparación entre tipos diferentes (%d vs %d).\n", left, right);
+            exit(1);
+        }
+        return;
+    }
+
+    if (left == NODE_STRING || right == NODE_STRING) {
+        if (strcmp(op, "+") != 0 || left != NODE_STRING || right != NODE_STRING) {
+            fprintf(stderr, "Error: operación '%s' no permitida con cadenas.\n", op);
+            exit(1);
+        }
+    } else if ((left == NODE_INT || left == NODE_FLOAT) &&
+               (right == NODE_INT || right == NODE_FLOAT)) {
+        // Operación válida
+    } else {
+        fprintf(stderr, "Error: operación '%s' entre tipos incompatibles.\n", op);
+        exit(1);
+    }
+}
+
 ASTNode* make_int_node(int val) {
     ASTNode* node = malloc(sizeof(ASTNode));
     node->type = NODE_INT;
@@ -66,23 +93,20 @@ ASTNode* make_id_node(const char* name) {
 }
 
 ASTNode* make_binop_node(const char* op, ASTNode* left, ASTNode* right) {
+    check_binop_types(op, left->data_type, right->data_type);
+
     ASTNode* node = malloc(sizeof(ASTNode));
     node->type = NODE_BINOP;
     node->binop.op = strdup(op);
     node->binop.left = left;
     node->binop.right = right;
 
-    if (left->data_type == NODE_STRING || right->data_type == NODE_STRING) {
-        if (strcmp(op, "+") != 0) {
-            fprintf(stderr, "Error: operación '%s' no válida con strings.\n", op);
-            exit(1);
-        }
+    if (left->data_type == NODE_STRING && right->data_type == NODE_STRING)
         node->data_type = NODE_STRING;
-    } else if (left->data_type == NODE_FLOAT || right->data_type == NODE_FLOAT) {
+    else if (left->data_type == NODE_FLOAT || right->data_type == NODE_FLOAT)
         node->data_type = NODE_FLOAT;
-    } else {
+    else
         node->data_type = NODE_INT;
-    }
 
     return node;
 }
@@ -107,12 +131,22 @@ ASTNode* make_print_node(ASTNode* expr) {
     ASTNode* node = malloc(sizeof(ASTNode));
     node->type = NODE_PRINT;
     node->data_type = expr->data_type;
-    node->print.value = expr;  // ✅ CORREGIDO: accede a 'print', no 'printstmt'
+    node->print.value = expr;
     return node;
 }
 
-
 ASTNode* make_read_node(const char* id, int dummy) {
+    Symbol* sym = get_symbol(id);
+    if (!sym) {
+        fprintf(stderr, "Error: variable '%s' no declarada (lectura).\n", id);
+        exit(1);
+    }
+
+    if (sym->type != NODE_INT && sym->type != NODE_FLOAT && sym->type != NODE_STRING) {
+        fprintf(stderr, "Error: tipo de variable '%s' no soportado para lectura.\n", id);
+        exit(1);
+    }
+
     ASTNode* node = malloc(sizeof(ASTNode));
     node->type = NODE_READ;
     node->sval = strdup(id);
@@ -164,4 +198,33 @@ void print_ast(ASTNode* node, int indent) {
         case NODE_ID: printf("Id: %s\n", node->sval); break;
         default: printf("Tipo de nodo: %d\n", node->type); break;
     }
+}
+
+// Tabla de funciones
+FunctionEntry* function_table = NULL;
+
+void add_function(const char* id, ASTNode* body) {
+    FunctionEntry* f = malloc(sizeof(FunctionEntry));
+    f->id = strdup(id);
+    f->body = body;
+    f->next = function_table;
+    function_table = f;
+}
+
+ASTNode* get_function(const char* id) {
+    for (FunctionEntry* f = function_table; f; f = f->next)
+        if (strcmp(f->id, id) == 0)
+            return f->body;
+    return NULL;
+}
+
+ASTNode* make_funccall_node(const char* id) {
+    if (!get_function(id)) {
+        fprintf(stderr, "Error: función '%s' no declarada.\n", id);
+        exit(1);
+    }
+    ASTNode* node = malloc(sizeof(ASTNode));
+    node->type = NODE_FUNCCALL;
+    node->funccall.id = strdup(id);
+    return node;
 }

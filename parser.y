@@ -23,7 +23,7 @@ void yyerror(const char *s) {
 %token <fval> FLOATNUM
 %token <id> ID STRING_LITERAL
 
-%token INT FLOAT STRING IF ELSE WHILE FOR PRINT WRITE
+%token INT FLOAT STRING IF ELSE WHILE FOR PRINT WRITE FUNCTION
 %token EQ NEQ LEQ GEQ LT GT
 
 %left '+' '-'
@@ -32,7 +32,7 @@ void yyerror(const char *s) {
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
 
-%type <node> program stmt stmt_list expr
+%type <node> program stmt stmt_list expr func_def func_call
 
 %%
 
@@ -75,7 +75,24 @@ stmt:
     | '{' stmt_list '}'        { $$ = $2; }
     | FOR '(' expr ';' expr ';' expr ')' stmt
                                 { $$ = make_for_node((ASTNode*)$3, (ASTNode*)$5, (ASTNode*)$7, (ASTNode*)$9); }
+    | func_def                 { $$ = NULL; } // No se añade al bloque principal
+    | func_call                { $$ = $1; }
     ;
+
+func_def:
+    FUNCTION ID '(' ')' '{' stmt_list '}'
+    {
+        add_function($2, $6);  // ⚠️ Función que debes definir en ast_c.c
+        $$ = NULL;
+    }
+;
+
+func_call:
+    ID '(' ')' ';'
+    {
+        $$ = make_funccall_node($1); // ⚠️ Nodo que debes definir en ast_c.c
+    }
+;
 
 expr:
       expr '+' expr      { $$ = make_binop_node("+", $1, $3); }
@@ -101,7 +118,12 @@ expr:
 int main() {
     if (yyparse() == 0) {
         FILE* out = fopen("output.c", "w");
-        fprintf(out, "#include <stdio.h>\n#include <string.h>\nint main() {\n");
+        fprintf(out, "#include <stdio.h>\n#include <string.h>\n");
+
+        // ⚠️ Aquí deberás generar las funciones antes del main
+        generate_all_functions(out);
+
+        fprintf(out, "int main() {\n");
         generate_code(out, root);
         fprintf(out, "return 0;\n}\n");
         fclose(out);

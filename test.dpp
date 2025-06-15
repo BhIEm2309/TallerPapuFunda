@@ -1,7 +1,5 @@
-integer a;
-integer b;
-integer c;
-a = 10;
-b = 3;
-c = a % b;
-print c;
+function saludar() {
+    print "Hola desde función";
+}
+
+saludar();
