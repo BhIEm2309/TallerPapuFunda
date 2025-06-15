@@ -107,7 +107,7 @@ ASTNode* make_print_node(ASTNode* expr) {
     ASTNode* node = malloc(sizeof(ASTNode));
     node->type = NODE_PRINT;
     node->data_type = expr->data_type;
-    node->print.value = expr;  // ✅ CORREGIDO: accede a 'print', no 'printstmt'
+    node->print.value = expr; 
     return node;
 }
 
@@ -153,6 +153,29 @@ ASTNode* make_for_node(ASTNode* init, ASTNode* cond, ASTNode* update, ASTNode* b
     node->forstmt.body = body;
     return node;
 }
+
+ASTNode* make_func_def_node(const char* name, ASTNode* body) {
+    ASTNode* node = malloc(sizeof(ASTNode));
+    node->type = NODE_FUNC_DEF;
+    node->func_def.name = strdup(name);
+    node->func_def.body = body;
+    return node;
+}
+
+ASTNode* make_func_call_node(const char* name) {
+    ASTNode* node = malloc(sizeof(ASTNode));
+    node->type = NODE_FUNC_CALL;
+    node->func_call.name = strdup(name);
+    return node;
+}
+
+ASTNode* make_return_node(ASTNode* value) {
+    ASTNode* node = malloc(sizeof(ASTNode));
+    node->type = NODE_RETURN;
+    node->retstmt.value = value;
+    return node;
+}
+
 
 void print_ast(ASTNode* node, int indent) {
     if (!node) return;

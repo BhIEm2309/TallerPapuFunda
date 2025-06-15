@@ -25,6 +25,8 @@ FLOAT   {DIGIT}"."{DIGIT}
 
 "print"         { return PRINT; }
 "write"         { return WRITE; }
+"function"      { return FUNCTION; }
+"return"        { return RETURN; }
 
 "=="            { return EQ; }
 "!="            { return NEQ; }

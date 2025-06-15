@@ -18,7 +18,10 @@ typedef enum {
     NODE_WHILE,
     NODE_FOR,
     NODE_BLOCK,
-    NODE_DECL
+    NODE_DECL,
+    NODE_FUNC_DEF,
+    NODE_FUNC_CALL,
+    NODE_RETURN,
 } NodeType;
 
 typedef struct ASTNode {
@@ -71,6 +74,18 @@ typedef struct ASTNode {
             char* id;
             NodeType decl_type;
         } decl;
+        struct {
+            char* name;
+            struct ASTNode* body;
+        } func_def;
+
+        struct {
+            char* name;
+        } func_call;
+        struct {
+            struct ASTNode* value;
+        } retstmt;
+
     };
 } ASTNode;
 
@@ -86,6 +101,9 @@ ASTNode* make_decl_node(const char* id, NodeType decl_type);
 ASTNode* make_if_node(ASTNode* cond, ASTNode* then_branch, ASTNode* else_branch);
 ASTNode* make_while_node(ASTNode* cond, ASTNode* body);
 ASTNode* make_for_node(ASTNode* init, ASTNode* cond, ASTNode* update, ASTNode* body);
+ASTNode* make_func_def_node(const char* name, ASTNode* body);
+ASTNode* make_func_call_node(const char* name);
+ASTNode* make_return_node(ASTNode* value);
 void print_ast(ASTNode* node, int indent);
 void generate_code(FILE* out, ASTNode* node);
 

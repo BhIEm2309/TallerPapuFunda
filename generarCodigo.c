@@ -114,7 +114,20 @@ void generate_code(FILE* out, ASTNode* node) {
                 generate_code(out, node->block.stmts[i]);
             }
             break;
+        case NODE_FUNC_DEF:
+            fprintf(out, "void %s() {\n", node->func_def.name);
+            generate_code(out, node->func_def.body);
+            fprintf(out, "}\n");
+            break;
 
+        case NODE_FUNC_CALL:
+            fprintf(out, "%s();\n", node->func_call.name);
+            break;
+        case NODE_RETURN:
+            fprintf(out, "return ");
+            generate_code(out, node->retstmt.value);
+            fprintf(out, ";\n");
+            break;
         default:
             break;
     }
