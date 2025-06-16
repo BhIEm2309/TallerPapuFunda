@@ -464,10 +464,10 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    40,    40,    44,    53,    64,    65,    66,    67,    68,
-      69,    70,    72,    74,    75,    76,    78,    79,    83,    91,
-      98,    99,   100,   101,   102,   103,   104,   105,   106,   107,
-     108,   109,   110,   111,   112,   113
+       0,    40,    40,    44,    53,    66,    67,    68,    69,    70,
+      71,    72,    74,    76,    77,    78,    80,    81,    85,    93,
+     100,   101,   102,   103,   104,   105,   106,   107,   108,   109,
+     110,   111,   112,   113,   114,   115
 };
 #endif
 
@@ -1458,7 +1458,7 @@ yyreduce:
                             ASTNode* block = malloc(sizeof(ASTNode));
                             block->type = NODE_BLOCK;
                             block->block.stmts = stmts;
-                            block->block.stmt_count = 1;
+                            block->block.stmt_count = (yyvsp[(1) - (1)].node) ? 1 : 0;
                             (yyval.node) = block;
                           ;}
     break;
@@ -1469,10 +1469,12 @@ yyreduce:
 #line 53 "parser.y"
     {
                             ASTNode* block = (ASTNode*)(yyvsp[(1) - (2)].node);
-                            int n = block->block.stmt_count + 1;
-                            block->block.stmts = realloc(block->block.stmts, n * sizeof(ASTNode*));
-                            block->block.stmts[n-1] = (ASTNode*)(yyvsp[(2) - (2)].node);
-                            block->block.stmt_count = n;
+                            if ((yyvsp[(2) - (2)].node)) {
+                                int n = block->block.stmt_count + 1;
+                                block->block.stmts = realloc(block->block.stmts, n * sizeof(ASTNode*));
+                                block->block.stmts[n - 1] = (ASTNode*)(yyvsp[(2) - (2)].node);
+                                block->block.stmt_count = n;
+                            }
                             (yyval.node) = block;
                           ;}
     break;
@@ -1480,100 +1482,100 @@ yyreduce:
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 64 "parser.y"
+#line 66 "parser.y"
     { add_symbol((yyvsp[(2) - (3)].id), NODE_INT); (yyval.node) = make_decl_node((yyvsp[(2) - (3)].id), NODE_INT); ;}
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 65 "parser.y"
+#line 67 "parser.y"
     { add_symbol((yyvsp[(2) - (3)].id), NODE_FLOAT); (yyval.node) = make_decl_node((yyvsp[(2) - (3)].id), NODE_FLOAT); ;}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 66 "parser.y"
+#line 68 "parser.y"
     { add_symbol((yyvsp[(2) - (3)].id), NODE_STRING); (yyval.node) = make_decl_node((yyvsp[(2) - (3)].id), NODE_STRING); ;}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 67 "parser.y"
+#line 69 "parser.y"
     { (yyval.node) = make_assign_node((yyvsp[(1) - (4)].id), (ASTNode*)(yyvsp[(3) - (4)].node)); ;}
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 68 "parser.y"
+#line 70 "parser.y"
     { (yyval.node) = make_print_node((ASTNode*)(yyvsp[(2) - (3)].node)); ;}
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 69 "parser.y"
+#line 71 "parser.y"
     { (yyval.node) = make_read_node((yyvsp[(2) - (3)].id), -1); ;}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 71 "parser.y"
+#line 73 "parser.y"
     { (yyval.node) = make_if_node((ASTNode*)(yyvsp[(3) - (5)].node), (ASTNode*)(yyvsp[(5) - (5)].node), NULL); ;}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 73 "parser.y"
+#line 75 "parser.y"
     { (yyval.node) = make_if_node((ASTNode*)(yyvsp[(3) - (7)].node), (ASTNode*)(yyvsp[(5) - (7)].node), (ASTNode*)(yyvsp[(7) - (7)].node)); ;}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 74 "parser.y"
+#line 76 "parser.y"
     { (yyval.node) = make_while_node((ASTNode*)(yyvsp[(3) - (5)].node), (ASTNode*)(yyvsp[(5) - (5)].node)); ;}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 75 "parser.y"
+#line 77 "parser.y"
     { (yyval.node) = (yyvsp[(2) - (3)].node); ;}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 77 "parser.y"
+#line 79 "parser.y"
     { (yyval.node) = make_for_node((ASTNode*)(yyvsp[(3) - (9)].node), (ASTNode*)(yyvsp[(5) - (9)].node), (ASTNode*)(yyvsp[(7) - (9)].node), (ASTNode*)(yyvsp[(9) - (9)].node)); ;}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 78 "parser.y"
+#line 80 "parser.y"
     { (yyval.node) = NULL; ;}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 79 "parser.y"
+#line 81 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 84 "parser.y"
+#line 86 "parser.y"
     {
-        add_function((yyvsp[(2) - (7)].id), (yyvsp[(6) - (7)].node));  // ⚠️ Función que debes definir en ast_c.c
+        add_function((yyvsp[(2) - (7)].id), (yyvsp[(6) - (7)].node));
         (yyval.node) = NULL;
     ;}
     break;
@@ -1581,128 +1583,128 @@ yyreduce:
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 92 "parser.y"
+#line 94 "parser.y"
     {
-        (yyval.node) = make_funccall_node((yyvsp[(1) - (4)].id)); // ⚠️ Nodo que debes definir en ast_c.c
+        (yyval.node) = make_funccall_node((yyvsp[(1) - (4)].id));
     ;}
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 98 "parser.y"
+#line 100 "parser.y"
     { (yyval.node) = make_binop_node("+", (yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); ;}
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 99 "parser.y"
+#line 101 "parser.y"
     { (yyval.node) = make_binop_node("-", (yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); ;}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 100 "parser.y"
+#line 102 "parser.y"
     { (yyval.node) = make_binop_node("*", (yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); ;}
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 101 "parser.y"
+#line 103 "parser.y"
     { (yyval.node) = make_binop_node("/", (yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); ;}
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 102 "parser.y"
+#line 104 "parser.y"
     { (yyval.node) = make_binop_node("%", (yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); ;}
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 103 "parser.y"
+#line 105 "parser.y"
     { (yyval.node) = make_binop_node("==", (yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); ;}
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 104 "parser.y"
+#line 106 "parser.y"
     { (yyval.node) = make_binop_node("!=", (yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); ;}
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 105 "parser.y"
+#line 107 "parser.y"
     { (yyval.node) = make_binop_node("<=", (yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); ;}
     break;
 
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 106 "parser.y"
+#line 108 "parser.y"
     { (yyval.node) = make_binop_node(">=", (yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); ;}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 107 "parser.y"
+#line 109 "parser.y"
     { (yyval.node) = make_binop_node("<", (yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); ;}
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 108 "parser.y"
+#line 110 "parser.y"
     { (yyval.node) = make_binop_node(">", (yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); ;}
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 109 "parser.y"
+#line 111 "parser.y"
     { (yyval.node) = make_assign_node((yyvsp[(1) - (3)].id), (ASTNode*)(yyvsp[(3) - (3)].node)); ;}
     break;
 
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 110 "parser.y"
+#line 112 "parser.y"
     { (yyval.node) = make_int_node((yyvsp[(1) - (1)].ival)); ;}
     break;
 
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 111 "parser.y"
+#line 113 "parser.y"
     { (yyval.node) = make_id_node((yyvsp[(1) - (1)].id)); ;}
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 112 "parser.y"
+#line 114 "parser.y"
     { (yyval.node) = make_float_node((yyvsp[(1) - (1)].fval)); ;}
     break;
 
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 113 "parser.y"
+#line 115 "parser.y"
     { (yyval.node) = make_string_node((yyvsp[(1) - (1)].id)); ;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1706 "parser.tab.c"
+#line 1708 "parser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1914,7 +1916,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 116 "parser.y"
+#line 118 "parser.y"
 
 
 int main() {
@@ -1922,7 +1924,6 @@ int main() {
         FILE* out = fopen("output.c", "w");
         fprintf(out, "#include <stdio.h>\n#include <string.h>\n");
 
-        // ⚠️ Aquí deberás generar las funciones antes del main
         generate_all_functions(out);
 
         fprintf(out, "int main() {\n");

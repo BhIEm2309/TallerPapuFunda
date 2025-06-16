@@ -1,5 +1,2 @@
-function saludar() {
-    print "Hola desde función";
-}
-
-saludar();
+integer a;
+write a;

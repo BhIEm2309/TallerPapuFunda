@@ -47,15 +47,17 @@ stmt_list:
                             ASTNode* block = malloc(sizeof(ASTNode));
                             block->type = NODE_BLOCK;
                             block->block.stmts = stmts;
-                            block->block.stmt_count = 1;
+                            block->block.stmt_count = $1 ? 1 : 0;
                             $$ = block;
                           }
     | stmt_list stmt       {
                             ASTNode* block = (ASTNode*)$1;
-                            int n = block->block.stmt_count + 1;
-                            block->block.stmts = realloc(block->block.stmts, n * sizeof(ASTNode*));
-                            block->block.stmts[n-1] = (ASTNode*)$2;
-                            block->block.stmt_count = n;
+                            if ($2) {
+                                int n = block->block.stmt_count + 1;
+                                block->block.stmts = realloc(block->block.stmts, n * sizeof(ASTNode*));
+                                block->block.stmts[n - 1] = (ASTNode*)$2;
+                                block->block.stmt_count = n;
+                            }
                             $$ = block;
                           }
     ;
@@ -75,14 +77,14 @@ stmt:
     | '{' stmt_list '}'        { $$ = $2; }
     | FOR '(' expr ';' expr ';' expr ')' stmt
                                 { $$ = make_for_node((ASTNode*)$3, (ASTNode*)$5, (ASTNode*)$7, (ASTNode*)$9); }
-    | func_def                 { $$ = NULL; } // No se añade al bloque principal
+    | func_def                 { $$ = NULL; }  // no se agrega al AST principal
     | func_call                { $$ = $1; }
     ;
 
 func_def:
     FUNCTION ID '(' ')' '{' stmt_list '}'
     {
-        add_function($2, $6);  // ⚠️ Función que debes definir en ast_c.c
+        add_function($2, $6);
         $$ = NULL;
     }
 ;
@@ -90,7 +92,7 @@ func_def:
 func_call:
     ID '(' ')' ';'
     {
-        $$ = make_funccall_node($1); // ⚠️ Nodo que debes definir en ast_c.c
+        $$ = make_funccall_node($1);
     }
 ;
 
@@ -120,7 +122,6 @@ int main() {
         FILE* out = fopen("output.c", "w");
         fprintf(out, "#include <stdio.h>\n#include <string.h>\n");
 
-        // ⚠️ Aquí deberás generar las funciones antes del main
         generate_all_functions(out);
 
         fprintf(out, "int main() {\n");

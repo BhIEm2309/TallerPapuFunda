@@ -15,6 +15,8 @@ void generate_all_functions(FILE* out) {
 void generate_code(FILE* out, ASTNode* node) {
     if (!node) return;
 
+    Symbol* symbol;
+
     switch (node->type) {
         case NODE_INT:
             fprintf(out, "%d", node->ival);
@@ -48,8 +50,8 @@ void generate_code(FILE* out, ASTNode* node) {
             }
             break;
 
-        case NODE_ASSIGN: {
-            Symbol* symbol = get_symbol(node->assign.id);
+        case NODE_ASSIGN:
+            symbol = get_symbol(node->assign.id);
             if (symbol && symbol->type == NODE_STRING) {
                 if (node->assign.value->type == NODE_BINOP &&
                     strcmp(node->assign.value->binop.op, "+") == 0 &&
@@ -77,22 +79,39 @@ void generate_code(FILE* out, ASTNode* node) {
                 fprintf(out, ";\n");
             }
             break;
-        }
 
         case NODE_PRINT:
             if (!node->print.value) break;
 
-            NodeType print_type = node->print.value->data_type;
-
-            if (print_type == NODE_INT)
-                fprintf(out, "printf(\"%%d\\n\", ");
-            else if (print_type == NODE_FLOAT)
-                fprintf(out, "printf(\"%%f\\n\", ");
-            else
-                fprintf(out, "printf(\"%%s\\n\", ");
+            switch (node->print.value->data_type) {
+                case NODE_INT:
+                    fprintf(out, "printf(\"%%d\\n\", ");
+                    break;
+                case NODE_FLOAT:
+                    fprintf(out, "printf(\"%%f\\n\", ");
+                    break;
+                case NODE_STRING:
+                    fprintf(out, "printf(\"%%s\\n\", ");
+                    break;
+                default:
+                    fprintf(out, "printf(\"(tipo desconocido)\\n\", ");
+                    break;
+            }
 
             generate_code(out, node->print.value);
             fprintf(out, ");\n");
+            break;
+
+        case NODE_READ:
+            symbol = get_symbol(node->sval);
+            if (symbol->type == NODE_INT)
+                fprintf(out, "scanf(\"%%d\", &%s);\n", node->sval);
+            else if (symbol->type == NODE_FLOAT)
+                fprintf(out, "scanf(\"%%f\", &%s);\n", node->sval);
+            else if (symbol->type == NODE_STRING)
+                fprintf(out, "scanf(\"%%s\", %s);\n", node->sval);
+            else
+                fprintf(out, "// Tipo no reconocido para scanf\n");
             break;
 
         case NODE_BINOP:
