@@ -1,2 +1,60 @@
-integer nombre;
-write nombre;
+function sumar(integer a, integer b) {
+    integer r;
+    r = a + b;
+    print "Suma:";
+    print r;
+    return r;
+}
+
+function restar(integer a, integer b) {
+    integer r;
+    r = a - b;
+    print "Resta:";
+    print r;
+    return r;
+}
+
+function multiplicar(integer a, integer b) {
+    integer r;
+    r = a * b;
+    print "Multiplicación:";
+    print r;
+    return r;
+}
+
+function dividir(integer a, integer b) {
+    integer r;
+    r = a / b;
+    print "División:";
+    print r;
+    return r;
+}
+
+function potencia(integer base, integer exponente) {
+    integer r;
+    integer i;
+    r = 1;
+    i = 0;
+    while (i < exponente) {
+        r = r * base;
+        i = i + 1;
+    }
+    print "Potencia:";
+    print r;
+    return r;
+}
+
+integer x;
+integer y;
+
+print "Ingrese primer número:";
+write x;
+
+print "Ingrese segundo número:";
+write y;
+
+sumar(x, y);
+restar(x, y);
+multiplicar(x, y);
+dividir(x, y);
+potencia(x, y);
