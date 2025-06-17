@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "ast_c.h"
 
 extern FunctionEntry* function_table;
@@ -105,19 +106,32 @@ void generate_code(FILE* out, ASTNode* node) {
         case NODE_READ: {
             Symbol* sym = get_symbol(node->sval);
             if (!sym) {
-                fprintf(stderr, "// Error: variable '%s' no declarada para lectura.\n", node->sval);
-                break;
+                fprintf(stderr, "Error: variable '%s' no declarada para lectura.\n", node->sval);
+                exit(1);
             }
 
+            fprintf(out, "{\n");
+            fprintf(out, "  char __input_buf[100];\n");
+            fprintf(out, "  fgets(__input_buf, sizeof(__input_buf), stdin);\n");
+
             if (sym->type == NODE_INT) {
-                fprintf(out, "scanf(\"%%d\", &%s);\n", node->sval);
+                fprintf(out, "  if (sscanf(__input_buf, \"%%d\", &%s) != 1) {\n", node->sval);
+                fprintf(out, "    fprintf(stderr, \"Error: se esperaba un número entero para '%s'.\\n\");\n", node->sval);
+                fprintf(out, "    exit(1);\n");
+                fprintf(out, "  }\n");
             } else if (sym->type == NODE_FLOAT) {
-                fprintf(out, "scanf(\"%%f\", &%s);\n", node->sval);
+                fprintf(out, "  if (sscanf(__input_buf, \"%%f\", &%s) != 1) {\n", node->sval);
+                fprintf(out, "    fprintf(stderr, \"Error: se esperaba un número decimal para '%s'.\\n\");\n", node->sval);
+                fprintf(out, "    exit(1);\n");
+                fprintf(out, "  }\n");
             } else if (sym->type == NODE_STRING) {
-                fprintf(out, "scanf(\"%%s\", %s);\n", node->sval);  // sin &
+                fprintf(out, "  sscanf(__input_buf, \"%%s\", %s);\n", node->sval);
             } else {
-                fprintf(out, "// Error: tipo de variable '%s' no soportado para lectura.\n", node->sval);
+                fprintf(out, "  fprintf(stderr, \"Error: tipo no soportado para lectura.\\n\");\n");
+                fprintf(out, "  exit(1);\n");
             }
+
+            fprintf(out, "}\n");
             break;
         }
 
@@ -174,7 +188,7 @@ void generate_code(FILE* out, ASTNode* node) {
                 if (i > 0) fprintf(out, ", ");
                 generate_code(out, node->funccall.args[i]);
             }
-            fprintf(out, ");\n");  // ← Asegura que siempre tenga ; y salto de línea
+            fprintf(out, ");\n");
             break;
 
         case NODE_RETURN:

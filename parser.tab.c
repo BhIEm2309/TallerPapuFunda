@@ -2056,7 +2056,9 @@ yyreturn:
 int main() {
     if (yyparse() == 0) {
         FILE* out = fopen("output.c", "w");
-        fprintf(out, "#include <stdio.h>\n#include <string.h>\n");
+        fprintf(out, "#include <stdio.h>\n");
+        fprintf(out, "#include <string.h>\n");
+        fprintf(out, "#include <stdlib.h>\n");
 
         generate_all_functions(out);
 
@@ -2068,4 +2070,3 @@ int main() {
     }
     return 0;
 }
-

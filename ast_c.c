@@ -140,11 +140,19 @@ ASTNode* make_read_node(const char* id, int dummy) {
         exit(1);
     }
 
+    // Validación de tipo: solo permitimos leer en enteros, flotantes y cadenas
+    if (sym->type != NODE_INT && sym->type != NODE_FLOAT && sym->type != NODE_STRING) {
+        fprintf(stderr, "Error: tipo de variable '%s' no válido para lectura con write.\n", id);
+        exit(1);
+    }
+
     ASTNode* node = malloc(sizeof(ASTNode));
     node->type = NODE_READ;
+    node->data_type = sym->type;  // Guardamos el tipo
     node->sval = strdup(id);
     return node;
 }
+
 
 ASTNode* make_decl_node(const char* id, NodeType decl_type) {
     ASTNode* node = malloc(sizeof(ASTNode));
