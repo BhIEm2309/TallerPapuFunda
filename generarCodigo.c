@@ -6,7 +6,7 @@ extern FunctionEntry* function_table;
 
 void generate_all_functions(FILE* out) {
     for (FunctionEntry* f = function_table; f; f = f->next) {
-        fprintf(out, "int %s(", f->id);  // Puedes mejorar esto si agregas tipos
+        fprintf(out, "int %s(", f->id);
         for (int i = 0; i < f->param_count; ++i) {
             ASTNode* param = f->params[i];
             if (i > 0) fprintf(out, ", ");
@@ -18,10 +18,7 @@ void generate_all_functions(FILE* out) {
                 fprintf(out, "char* %s", param->decl.id);
         }
         fprintf(out, ") {\n");
-
         generate_code(out, f->body);
-
-        
         fprintf(out, "}\n\n");
     }
 }
@@ -95,19 +92,11 @@ void generate_code(FILE* out, ASTNode* node) {
 
         case NODE_PRINT:
             if (!node->print.value) break;
-
             switch (node->print.value->data_type) {
-                case NODE_INT:
-                    fprintf(out, "printf(\"%%d\\n\", ");
-                    break;
-                case NODE_FLOAT:
-                    fprintf(out, "printf(\"%%f\\n\", ");
-                    break;
-                case NODE_STRING:
-                    fprintf(out, "printf(\"%%s\\n\", ");
-                    break;
-                default:
-                    break;
+                case NODE_INT:    fprintf(out, "printf(\"%%d\\n\", "); break;
+                case NODE_FLOAT:  fprintf(out, "printf(\"%%f\\n\", "); break;
+                case NODE_STRING: fprintf(out, "printf(\"%%s\\n\", "); break;
+                default: break;
             }
             generate_code(out, node->print.value);
             fprintf(out, ");\n");
@@ -166,7 +155,7 @@ void generate_code(FILE* out, ASTNode* node) {
                 if (i > 0) fprintf(out, ", ");
                 generate_code(out, node->funccall.args[i]);
             }
-            fprintf(out, ")");
+            fprintf(out, ");\n");  // ← Asegura que siempre tenga ; y salto de línea
             break;
 
         case NODE_RETURN:

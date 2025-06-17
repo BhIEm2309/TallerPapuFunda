@@ -1,15 +1,54 @@
 function sumar(integer a, integer b) {
     integer resultado;
     resultado = a + b;
+    print resultado;
+    return resultado;
+}
+
+function restar(integer a, integer b) {
+    integer resultado;
+    resultado = a - b;
+    print resultado;
+    return resultado;
+}
+
+function multiplicar(integer a, integer b) {
+    integer resultado;
+    resultado = a * b;
+    print resultado;
+    return resultado;
+}
+
+function dividir(integer a, integer b) {
+    integer resultado;
+    resultado = a / b;
+    print resultado;
+    return resultado;
+}
+
+function potencia(integer base, integer exponente) {
+    integer resultado;
+    integer i;
+    resultado = 1;
+    i = 0;
+
+    while (i < exponente) {
+        resultado = resultado * base;
+        i = i + 1;
+    }
+
+    print resultado;
     return resultado;
 }
 
 integer x;
 integer y;
-integer z;
 
 x = 10;
-y = 5;
+y = 2;
 
-z = sumar(x, y);
-print z;
+sumar(x, y);
+restar(x, y);
+multiplicar(x, y);
+dividir(x, y);
+potencia(x, y);

@@ -80,8 +80,8 @@ stmt:
     | '{' stmt_list '}'        { $$ = $2; }
     | FOR '(' expr ';' expr ';' expr ')' stmt
                                 { $$ = make_for_node((ASTNode*)$3, (ASTNode*)$5, (ASTNode*)$7, (ASTNode*)$9); }
+    | func_call ';'            { $$ = $1; }
     | func_def                 { $$ = NULL; }
-    | func_call                { $$ = $1; }
     ;
 
 func_def:
@@ -121,8 +121,7 @@ return_stmt:
     ;
 
 func_call:
-    ID '(' arg_list_opt ')' ';'
-    {
+    ID '(' arg_list_opt ')' {
         $$ = make_funccall_node_with_args($1, $3.list, $3.count);
     }
     ;
