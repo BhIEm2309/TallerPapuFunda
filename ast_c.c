@@ -1,6 +1,19 @@
 #include "ast_c.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stddef.h>
+
 
 Symbol* symbol_table = NULL;
+Symbol* get_symbol(const char* id);
+
+Symbol* get_symbol(const char* id) {
+    for (Symbol* s = symbol_table; s; s = s->next)
+        if (strcmp(s->id, id) == 0)
+            return s;
+    return NULL;
+}
 
 void add_symbol(const char* id, NodeType type) {
     if (get_symbol(id)) return;
@@ -9,13 +22,6 @@ void add_symbol(const char* id, NodeType type) {
     sym->type = type;
     sym->next = symbol_table;
     symbol_table = sym;
-}
-
-Symbol* get_symbol(const char* id) {
-    for (Symbol* s = symbol_table; s; s = s->next)
-        if (strcmp(s->id, id) == 0)
-            return s;
-    return NULL;
 }
 
 NodeType get_symbol_type(const char* id) {
@@ -107,8 +113,7 @@ ASTNode* make_print_node(ASTNode* expr) {
     ASTNode* node = malloc(sizeof(ASTNode));
     node->type = NODE_PRINT;
     node->data_type = expr->data_type;
-    node->print.value = expr;  // ✅ CORREGIDO: accede a 'print', no 'printstmt'
-    return node;
+    node->print.value = expr; 
 }
 
 
@@ -153,6 +158,54 @@ ASTNode* make_for_node(ASTNode* init, ASTNode* cond, ASTNode* update, ASTNode* b
     node->forstmt.body = body;
     return node;
 }
+
+ASTNode* make_func_def_node(const char* name, ASTNode* params, ASTNode* body) {
+    ASTNode* node = malloc(sizeof(ASTNode));
+    node->type = NODE_FUNC_DEF;
+    node->func_def.name = strdup(name);
+    node->func_def.params = params;
+    node->func_def.body = body;
+    return node;
+}
+
+ASTNode* make_func_call_node(const char* name, ASTNode* args) {
+    ASTNode* node = malloc(sizeof(ASTNode));
+    node->type = NODE_FUNC_CALL;
+    node->func_call.name = strdup(name);
+    node->func_call.args = args;
+    return node;
+}
+
+ParamList* make_param_list(const char* name, ParamList* next) {
+    ParamList* param = malloc(sizeof(ParamList));
+    param->name = strdup(name);
+    param->next = next;
+    return param;
+}
+
+ASTNode* append_param(ASTNode* list, const char* id) {
+    list->param_list.count++;
+    list->param_list.ids = realloc(list->param_list.ids, list->param_list.count * sizeof(char*));
+    list->param_list.ids[list->param_list.count - 1] = strdup(id);
+    return list;
+}
+
+ASTNode* make_arg_list(ASTNode* expr) {
+    ASTNode* node = malloc(sizeof(ASTNode));
+    node->type = NODE_ARG_LIST;
+    node->arg_list.count = 1;
+    node->arg_list.args = malloc(sizeof(ASTNode*));
+    node->arg_list.args[0] = expr;
+    return node;
+}
+
+ASTNode* append_arg(ASTNode* list, ASTNode* expr) {
+    list->arg_list.count++;
+    list->arg_list.args = realloc(list->arg_list.args, list->arg_list.count * sizeof(ASTNode*));
+    list->arg_list.args[list->arg_list.count - 1] = expr;
+    return list;
+}
+
 
 void print_ast(ASTNode* node, int indent) {
     if (!node) return;

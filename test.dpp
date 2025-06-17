@@ -1,9 +1,17 @@
-integer base;
-integer exponente;
-integer resultado;
+function potencia(base, exponente) {
+    int i;
+    int resultado;
+    i = 0;
+    resultado = 1;
+    while (i < exponente) {
+        resultado = resultado * base;
+        i = i + 1;
+    }
+    print resultado;
+}
 
-base = 2;
-exponente = 4;
-resultado = base ** exponente;
-
-print resultado;
+int a;
+int b;
+a = 2;
+b = 4;
+potencia(a, b);

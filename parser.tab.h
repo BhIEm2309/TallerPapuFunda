@@ -62,14 +62,16 @@ extern int yydebug;
     FOR = 268,
     PRINT = 269,
     WRITE = 270,
-    EQ = 271,
-    NEQ = 272,
-    LEQ = 273,
-    GEQ = 274,
-    LT = 275,
-    GT = 276,
-    POW = 277,
-    LOWER_THAN_ELSE = 278
+    RETURN = 271,
+    FUNCTION = 272,
+    EQ = 273,
+    NEQ = 274,
+    LEQ = 275,
+    GEQ = 276,
+    LT = 277,
+    GT = 278,
+    POW = 279,
+    LOWER_THAN_ELSE = 280
   };
 #endif
 
@@ -84,7 +86,7 @@ union YYSTYPE
     char* id;
     void* node;
 
-#line 88 "parser.tab.h"
+#line 90 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

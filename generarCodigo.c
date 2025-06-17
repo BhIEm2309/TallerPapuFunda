@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
 #include "ast_c.h"
 
 void generate_code(FILE* out, ASTNode* node) {
@@ -121,6 +123,25 @@ void generate_code(FILE* out, ASTNode* node) {
             for (int i = 0; i < node->block.stmt_count; ++i) {
                 generate_code(out, node->block.stmts[i]);
             }
+            break;
+        case NODE_FUNC_DEF:
+            fprintf(out, "int %s(", node->func_def.name);
+            for (int i = 0; i < node->func_def.params->param_list.count; ++i) {
+                if (i > 0) fprintf(out, ", ");
+                fprintf(out, "int %s", node->func_def.params->param_list.ids[i]);
+            }
+            fprintf(out, ") {\n");
+            generate_code(out, node->func_def.body);
+            fprintf(out, "}\n");
+            break;
+
+        case NODE_FUNC_CALL:
+            fprintf(out, "%s(", node->func_call.name);
+            for (int i = 0; i < node->func_call.args->arg_list.count; ++i) {
+                if (i > 0) fprintf(out, ", ");
+                generate_code(out, node->func_call.args->arg_list.args[i]);
+            }
+            fprintf(out, ")");
             break;
 
         default:

@@ -23,10 +23,8 @@ void yyerror(const char *s) {
 %token <fval> FLOATNUM
 %token <id> ID STRING_LITERAL
 
-%token INT FLOAT STRING IF ELSE WHILE FOR PRINT WRITE
-%token EQ NEQ LEQ GEQ LT GT
-%token POW
-
+%token INT FLOAT STRING IF ELSE WHILE FOR PRINT WRITE RETURN FUNCTION
+%token EQ NEQ LEQ GEQ LT GT POW
 
 %left '+' '-'
 %left '*' '/' '%'
@@ -35,7 +33,7 @@ void yyerror(const char *s) {
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
 
-%type <node> program stmt stmt_list expr
+%type <node> program stmt stmt_list expr param_list arg_list func_def func_call
 
 %%
 
@@ -70,14 +68,37 @@ stmt:
     | ID '=' expr ';'          { $$ = make_assign_node($1, (ASTNode*)$3); }
     | PRINT expr ';'           { $$ = make_print_node((ASTNode*)$2); }
     | WRITE ID ';'             { $$ = make_read_node($2, -1); }
-    | IF '(' expr ')' stmt %prec LOWER_THAN_ELSE
-                                { $$ = make_if_node((ASTNode*)$3, (ASTNode*)$5, NULL); }
-    | IF '(' expr ')' stmt ELSE stmt
-                                { $$ = make_if_node((ASTNode*)$3, (ASTNode*)$5, (ASTNode*)$7); }
+    | RETURN expr ';'          { $$ = make_return_node((ASTNode*)$2); }
+    | func_def                 { $$ = $1; }
+    | func_call ';'            { $$ = $1; }
+    | IF '(' expr ')' stmt %prec LOWER_THAN_ELSE { $$ = make_if_node((ASTNode*)$3, (ASTNode*)$5, NULL); }
+    | IF '(' expr ')' stmt ELSE stmt { $$ = make_if_node((ASTNode*)$3, (ASTNode*)$5, (ASTNode*)$7); }
     | WHILE '(' expr ')' stmt  { $$ = make_while_node((ASTNode*)$3, (ASTNode*)$5); }
     | '{' stmt_list '}'        { $$ = $2; }
     | FOR '(' expr ';' expr ';' expr ')' stmt
-                                { $$ = make_for_node((ASTNode*)$3, (ASTNode*)$5, (ASTNode*)$7, (ASTNode*)$9); }
+                              { $$ = make_for_node((ASTNode*)$3, (ASTNode*)$5, (ASTNode*)$7, (ASTNode*)$9); }
+    ;
+
+func_def:
+    FUNCTION ID '(' param_list ')' '{' stmt_list '}' {
+        $$ = make_func_def_node($2, $4, $7);
+    }
+    ;
+
+param_list:
+      /* empty */           { $$ = NULL; }
+    | ID                    { $$ = make_param_list($1, NULL); }
+    | ID ',' param_list     { $$ = make_param_list($1, $3); }
+    ;
+
+func_call:
+    ID '(' arg_list ')'     { $$ = make_func_call_node($1, $3); }
+    ;
+
+arg_list:
+      /* empty */           { $$ = NULL; }
+    | expr                  { $$ = make_arg_list($1, NULL); }
+    | expr ',' arg_list     { $$ = make_arg_list($1, $3); }
     ;
 
 expr:
@@ -86,7 +107,7 @@ expr:
     | expr '*' expr      { $$ = make_binop_node("*", $1, $3); }
     | expr '/' expr      { $$ = make_binop_node("/", $1, $3); }
     | expr '%' expr      { $$ = make_binop_node("%", $1, $3); }
-    | expr POW expr       { $$ = make_binop_node("**", $1, $3); }
+    | expr POW expr      { $$ = make_binop_node("**", $1, $3); }
     | expr EQ expr       { $$ = make_binop_node("==", $1, $3); }
     | expr NEQ expr      { $$ = make_binop_node("!=", $1, $3); }
     | expr LEQ expr      { $$ = make_binop_node("<=", $1, $3); }
@@ -98,7 +119,8 @@ expr:
     | ID                 { $$ = make_id_node($1); }
     | FLOATNUM           { $$ = make_float_node($1); }
     | STRING_LITERAL     { $$ = make_string_node($1); }
-;
+    | func_call          { $$ = $1; }
+    ;
 
 %%
 
