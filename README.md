@@ -41,6 +41,11 @@ Para el funcionamiento del compilador se hace uso de los siguientes archivos:
 - `generarCodigo.c` → Recorrido del AST y generación de código C
 
 # Ejemplos de sintaxis
+| **Funciones de entrada/salida** |
+```plaintext
+print x;
+write y;
+```
 | **Declarar variables** |
 ```plaintext
 integer edad;
@@ -60,7 +65,6 @@ resta = 10 - 5;
 multiplicación = 5 * 2;
 división = 10 / 2;
 resto = 10 % 3;
-
 ```
 | **Condicionales** |
 ```plaintext
@@ -76,7 +80,22 @@ a == b;   a != b;
 a > 10;   a < 10;
 a >= 10;  a <= 10;
 ```
+| **Ciclos** |
+```plaintext
+while (x < 5) {
+    x = x + 1;
+}
 
+for (i = 0; i < 5; i = i + 1) {
+    print i;
+}
+```
+| **Funciones** |
+```plaintext
+function saludar() {
+    print "Hola mundo";
+}
+```
 # Como compilar (Bash):
 1. flex scanner.l
 2. bison -d parser.y
