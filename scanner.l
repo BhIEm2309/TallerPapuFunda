@@ -32,6 +32,7 @@ FLOAT   {DIGIT}"."{DIGIT}
 ">="            { return GEQ; }
 "<"             { return LT; }
 ">"             { return GT; }
+"**"            { return POW; }
 "%"             { return '%'; }
 "+"             { return '+'; }
 "-"             { return '-'; }

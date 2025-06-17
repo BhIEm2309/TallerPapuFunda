@@ -25,9 +25,12 @@ void yyerror(const char *s) {
 
 %token INT FLOAT STRING IF ELSE WHILE FOR PRINT WRITE
 %token EQ NEQ LEQ GEQ LT GT
+%token POW
+
 
 %left '+' '-'
 %left '*' '/' '%'
+%right POW
 %left EQ NEQ LT GT LEQ GEQ
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
@@ -83,6 +86,7 @@ expr:
     | expr '*' expr      { $$ = make_binop_node("*", $1, $3); }
     | expr '/' expr      { $$ = make_binop_node("/", $1, $3); }
     | expr '%' expr      { $$ = make_binop_node("%", $1, $3); }
+    | expr POW expr       { $$ = make_binop_node("**", $1, $3); }
     | expr EQ expr       { $$ = make_binop_node("==", $1, $3); }
     | expr NEQ expr      { $$ = make_binop_node("!=", $1, $3); }
     | expr LEQ expr      { $$ = make_binop_node("<=", $1, $3); }
@@ -101,7 +105,7 @@ expr:
 int main() {
     if (yyparse() == 0) {
         FILE* out = fopen("output.c", "w");
-        fprintf(out, "#include <stdio.h>\n#include <string.h>\nint main() {\n");
+        fprintf(out, "#include <stdio.h>\n#include <string.h>\n#include <math.h>\nint main() {\n");
         generate_code(out, root);
         fprintf(out, "return 0;\n}\n");
         fclose(out);

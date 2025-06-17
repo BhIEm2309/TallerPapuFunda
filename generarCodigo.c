@@ -69,11 +69,19 @@ void generate_code(FILE* out, ASTNode* node) {
             break;
 
         case NODE_BINOP:
-            fprintf(out, "(");
-            generate_code(out, node->binop.left);
-            fprintf(out, " %s ", node->binop.op);
-            generate_code(out, node->binop.right);
-            fprintf(out, ")");
+            if (strcmp(node->binop.op, "**") == 0) {
+                fprintf(out, "pow(");
+                generate_code(out, node->binop.left);
+                fprintf(out, ", ");
+                generate_code(out, node->binop.right);
+                fprintf(out, ")");
+            } else {
+                fprintf(out, "(");
+                generate_code(out, node->binop.left);
+                fprintf(out, " %s ", node->binop.op);
+                generate_code(out, node->binop.right);
+                fprintf(out, ")");
+            }
             break;
 
         case NODE_IF:

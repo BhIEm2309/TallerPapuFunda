@@ -1,6 +1,7 @@
 flex scanner.l                                          // comando generacion lex.yy
 bison -d parser.y                                       //comando generacion parsers
 gcc parser.tab.c lex.yy.c ast_c.c generarCodigo.c -o dpp_compiler -lm   //compilacion general
-dpp_compiler < test.dpp                             
+./dpp_compiler < test.dpp                             
 gcc output.c -o programa
-programa
+gcc output.c -o programa -lm                           //para incluir biblioteca
+./programa

@@ -1,7 +1,9 @@
-integer a;
-integer b;
-integer c;
-a = 10;
-b = 3;
-c = a % b;
-print c;
+integer base;
+integer exponente;
+integer resultado;
+
+base = 2;
+exponente = 4;
+resultado = base ** exponente;
+
+print resultado;
