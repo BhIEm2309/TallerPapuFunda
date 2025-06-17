@@ -5,13 +5,11 @@ integer suma;
 integer resta;
 integer multi;
 integer divis;
-integer resto;
-integer poten;
 
-print "Ingrese primer número:";
+print "Ingrese primer numero:";
 write x;
 
-print "Ingrese segundo número:";
+print "Ingrese segundo numero:";
 write y;
 
 print "";
@@ -25,12 +23,10 @@ print "Resta:";
 print resta;
 
 multi = x*y;
-print "Multiplicación:";
+print "Multiplicacion:";
 print multi;
 
 divis = x/y;
 print "Division:";
 print divis;
-print "Resto:";
-print resto;
 print "==================================";

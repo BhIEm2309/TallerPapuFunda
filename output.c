@@ -16,15 +16,15 @@ printf("%d\n", r);
 
 int dividir(int a, int b) {
 int r;
-r = (a / b);
-printf("%s\n", "División:");
+r = ({ int __right; __right = b; if (__right == 0) { fprintf(stderr, "Error: división por cero.\n"); exit(1); } a / __right; });
+printf("%s\n", "Division:");
 printf("%d\n", r);
 }
 
 int multiplicar(int a, int b) {
 int r;
 r = (a * b);
-printf("%s\n", "Multiplicación:");
+printf("%s\n", "Multiplicacion:");
 printf("%d\n", r);
 }
 
@@ -45,7 +45,7 @@ printf("%d\n", r);
 int main() {
 int x;
 int y;
-printf("%s\n", "Ingrese primer número:");
+printf("%s\n", "Ingrese primer numero:");
 {
   char __input_buf[100];
   fgets(__input_buf, sizeof(__input_buf), stdin);
@@ -54,7 +54,7 @@ printf("%s\n", "Ingrese primer número:");
     exit(1);
   }
 }
-printf("%s\n", "Ingrese segundo número:");
+printf("%s\n", "Ingrese segundo numero:");
 {
   char __input_buf[100];
   fgets(__input_buf, sizeof(__input_buf), stdin);
@@ -63,10 +63,12 @@ printf("%s\n", "Ingrese segundo número:");
     exit(1);
   }
 }
+printf("%s\n", "=============================================");
 sumar(x, y);
 restar(x, y);
 multiplicar(x, y);
 dividir(x, y);
 potencia(x, y);
+printf("%s\n", "=============================================");
 return 0;
 }

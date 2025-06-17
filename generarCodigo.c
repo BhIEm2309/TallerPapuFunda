@@ -46,17 +46,10 @@ void generate_code(FILE* out, ASTNode* node) {
 
         case NODE_DECL:
             switch (node->decl.decl_type) {
-                case NODE_INT:
-                    fprintf(out, "int %s;\n", node->decl.id);
-                    break;
-                case NODE_FLOAT:
-                    fprintf(out, "float %s;\n", node->decl.id);
-                    break;
-                case NODE_STRING:
-                    fprintf(out, "char %s[100];\n", node->decl.id);
-                    break;
-                default:
-                    break;
+                case NODE_INT: fprintf(out, "int %s;\n", node->decl.id); break;
+                case NODE_FLOAT: fprintf(out, "float %s;\n", node->decl.id); break;
+                case NODE_STRING: fprintf(out, "char %s[100];\n", node->decl.id); break;
+                default: break;
             }
             break;
 
@@ -72,11 +65,9 @@ void generate_code(FILE* out, ASTNode* node) {
                     fprintf(out, "strcpy(__temp_concat, ");
                     generate_code(out, node->assign.value->binop.left);
                     fprintf(out, ");\n");
-
                     fprintf(out, "strcat(__temp_concat, ");
                     generate_code(out, node->assign.value->binop.right);
                     fprintf(out, ");\n");
-
                     fprintf(out, "strcpy(%s, __temp_concat);\n", node->assign.id);
                 } else {
                     fprintf(out, "strcpy(%s, ", node->assign.id);
@@ -94,8 +85,8 @@ void generate_code(FILE* out, ASTNode* node) {
         case NODE_PRINT:
             if (!node->print.value) break;
             switch (node->print.value->data_type) {
-                case NODE_INT:    fprintf(out, "printf(\"%%d\\n\", "); break;
-                case NODE_FLOAT:  fprintf(out, "printf(\"%%f\\n\", "); break;
+                case NODE_INT: fprintf(out, "printf(\"%%d\\n\", "); break;
+                case NODE_FLOAT: fprintf(out, "printf(\"%%f\\n\", "); break;
                 case NODE_STRING: fprintf(out, "printf(\"%%s\\n\", "); break;
                 default: break;
             }
@@ -136,11 +127,24 @@ void generate_code(FILE* out, ASTNode* node) {
         }
 
         case NODE_BINOP:
-            fprintf(out, "(");
-            generate_code(out, node->binop.left);
-            fprintf(out, " %s ", node->binop.op);
-            generate_code(out, node->binop.right);
-            fprintf(out, ")");
+            if ((strcmp(node->binop.op, "/") == 0 || strcmp(node->binop.op, "%") == 0)) {
+                // Prevención de división por cero solo si no es un valor constante 0
+                fprintf(out, "({ ");
+                fprintf(out, "int __right; ");
+                fprintf(out, "__right = ");
+                generate_code(out, node->binop.right);
+                fprintf(out, "; ");
+                fprintf(out, "if (__right == 0) { fprintf(stderr, \"Error: división por cero.\\n\"); exit(1); } ");
+                generate_code(out, node->binop.left);
+                fprintf(out, " %s __right; ", node->binop.op);
+                fprintf(out, "})");
+            } else {
+                fprintf(out, "(");
+                generate_code(out, node->binop.left);
+                fprintf(out, " %s ", node->binop.op);
+                generate_code(out, node->binop.right);
+                fprintf(out, ")");
+            }
             break;
 
         case NODE_IF:

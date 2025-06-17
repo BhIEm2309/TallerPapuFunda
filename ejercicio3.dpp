@@ -17,7 +17,7 @@ function restar(integer a, integer b) {
 function multiplicar(integer a, integer b) {
     integer r;
     r = a * b;
-    print "Multiplicación:";
+    print "Multiplicacion:";
     print r;
     return r;
 }
@@ -25,7 +25,7 @@ function multiplicar(integer a, integer b) {
 function dividir(integer a, integer b) {
     integer r;
     r = a / b;
-    print "División:";
+    print "Division:";
     print r;
     return r;
 }
@@ -47,14 +47,15 @@ function potencia(integer base, integer exponente) {
 integer x;
 integer y;
 
-print "Ingrese primer número:";
+print "Ingrese primer numero:";
 write x;
 
-print "Ingrese segundo número:";
+print "Ingrese segundo numero:";
 write y;
-
+print "=============================================";
 sumar(x, y);
 restar(x, y);
 multiplicar(x, y);
 dividir(x, y);
 potencia(x, y);
+print "=============================================";
