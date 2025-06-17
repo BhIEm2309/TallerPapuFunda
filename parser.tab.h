@@ -53,13 +53,14 @@
      PRINT = 269,
      WRITE = 270,
      FUNCTION = 271,
-     EQ = 272,
-     NEQ = 273,
-     LEQ = 274,
-     GEQ = 275,
-     LT = 276,
-     GT = 277,
-     LOWER_THAN_ELSE = 278
+     RETURN = 272,
+     EQ = 273,
+     NEQ = 274,
+     LEQ = 275,
+     GEQ = 276,
+     LT = 277,
+     GT = 278,
+     LOWER_THAN_ELSE = 279
    };
 #endif
 
@@ -76,11 +77,15 @@ typedef union YYSTYPE
     float fval;
     char* id;
     void* node;
+    struct {
+        struct ASTNode** list;
+        int count;
+    } node_list;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 84 "parser.tab.h"
+#line 89 "parser.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

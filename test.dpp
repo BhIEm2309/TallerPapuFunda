@@ -1,5 +1,15 @@
-function saludar() {
-    print "Hola desde función";
+function sumar(integer a, integer b) {
+    integer resultado;
+    resultado = a + b;
+    return resultado;
 }
 
-saludar();
+integer x;
+integer y;
+integer z;
+
+x = 10;
+y = 5;
+
+z = sumar(x, y);
+print z;
