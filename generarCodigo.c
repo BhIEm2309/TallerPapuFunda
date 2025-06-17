@@ -102,6 +102,25 @@ void generate_code(FILE* out, ASTNode* node) {
             fprintf(out, ");\n");
             break;
 
+        case NODE_READ: {
+            Symbol* sym = get_symbol(node->sval);
+            if (!sym) {
+                fprintf(stderr, "// Error: variable '%s' no declarada para lectura.\n", node->sval);
+                break;
+            }
+
+            if (sym->type == NODE_INT) {
+                fprintf(out, "scanf(\"%%d\", &%s);\n", node->sval);
+            } else if (sym->type == NODE_FLOAT) {
+                fprintf(out, "scanf(\"%%f\", &%s);\n", node->sval);
+            } else if (sym->type == NODE_STRING) {
+                fprintf(out, "scanf(\"%%s\", %s);\n", node->sval);  // sin &
+            } else {
+                fprintf(out, "// Error: tipo de variable '%s' no soportado para lectura.\n", node->sval);
+            }
+            break;
+        }
+
         case NODE_BINOP:
             fprintf(out, "(");
             generate_code(out, node->binop.left);

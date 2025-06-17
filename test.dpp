@@ -1,6 +1,7 @@
 function sumar(integer a, integer b) {
     integer resultado;
     resultado = a + b;
+    print "La suma es:";
     print resultado;
     return resultado;
 }
@@ -8,6 +9,7 @@ function sumar(integer a, integer b) {
 function restar(integer a, integer b) {
     integer resultado;
     resultado = a - b;
+    print "La resta es:";
     print resultado;
     return resultado;
 }
@@ -15,6 +17,7 @@ function restar(integer a, integer b) {
 function multiplicar(integer a, integer b) {
     integer resultado;
     resultado = a * b;
+    print "La multiplicación es:";
     print resultado;
     return resultado;
 }
@@ -22,21 +25,7 @@ function multiplicar(integer a, integer b) {
 function dividir(integer a, integer b) {
     integer resultado;
     resultado = a / b;
-    print resultado;
-    return resultado;
-}
-
-function potencia(integer base, integer exponente) {
-    integer resultado;
-    integer i;
-    resultado = 1;
-    i = 0;
-
-    while (i < exponente) {
-        resultado = resultado * base;
-        i = i + 1;
-    }
-
+    print "La división es:";
     print resultado;
     return resultado;
 }
@@ -44,11 +33,13 @@ function potencia(integer base, integer exponente) {
 integer x;
 integer y;
 
-x = 10;
-y = 2;
+print "Ingrese el primer número:";
+write x;
+
+print "Ingrese el segundo número:";
+write y;
 
 sumar(x, y);
 restar(x, y);
 multiplicar(x, y);
 dividir(x, y);
-potencia(x, y);
