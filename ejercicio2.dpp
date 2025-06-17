@@ -1,0 +1,20 @@
+integer x;
+integer y;
+integer resultado;
+integer i;
+
+print "Ingrese primer numero";
+write x;
+print "Ingrese segundo numero";
+write y;
+
+resultado = 1;
+i = 0;
+
+while (i < y) {
+    resultado = resultado * x;
+    i = i + 1;
+}
+
+print "Resultado:";
+print resultado;

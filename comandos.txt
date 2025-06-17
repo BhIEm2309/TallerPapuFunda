@@ -4,3 +4,6 @@ gcc parser.tab.c lex.yy.c ast_c.c generarCodigo.c -o dpp_compiler -lm   //compil
 dpp_compiler < test.dpp                             
 gcc output.c -o programa
 programa
+
+sudo apt update
+sudo apt install flex bison -y

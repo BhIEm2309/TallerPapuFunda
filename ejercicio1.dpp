@@ -1,0 +1,36 @@
+integer x;
+integer y;
+
+integer suma;
+integer resta;
+integer multi;
+integer divis;
+integer resto;
+integer poten;
+
+print "Ingrese primer número:";
+write x;
+
+print "Ingrese segundo número:";
+write y;
+
+print "";
+print "==================================";
+suma = x + y;
+print "Suma:";
+print suma;
+
+resta = x-y;
+print "Resta:";
+print resta;
+
+multi = x*y;
+print "Multiplicación:";
+print multi;
+
+divis = x/y;
+print "Division:";
+print divis;
+print "Resto:";
+print resto;
+print "==================================";
