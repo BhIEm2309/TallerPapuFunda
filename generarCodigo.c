@@ -128,7 +128,7 @@ void generate_code(FILE* out, ASTNode* node) {
 
         case NODE_BINOP:
             if ((strcmp(node->binop.op, "/") == 0 || strcmp(node->binop.op, "%") == 0)) {
-                // Prevención de división por cero solo si no es un valor constante 0
+                
                 fprintf(out, "({ ");
                 fprintf(out, "int __right; ");
                 fprintf(out, "__right = ");
